@@ -8,23 +8,23 @@ function testParser() {
     
     const testCases = [
         {
-            input: 'AAA(My Title)',
+            input: 'Title1(My Title)',
             expected: '# My Title'
         },
         {
-            input: 'BBB(Subtitle)',
+            input: 'Title2(Subtitle)',
             expected: '## Subtitle'
         },
         {
-            input: 'CCC(Small Heading)',
+            input: 'Title3(Small Heading)',
             expected: '### Small Heading'
         },
         {
-            input: 'DDD(List Item)',
+            input: 'List(List Item)',
             expected: '- List Item'
         },
         {
-            input: 'EEE(This is a quote)',
+            input: 'Quote(This is a quote)',
             expected: '> This is a quote'
         }
     ];
@@ -50,10 +50,10 @@ function testParser() {
     
     // 測試多行輸入
     console.log('🔄 Testing multi-line input...');
-    const multiLineInput = `BBB(Health Tips)
-DDD(Less Sugar)
-DDD(More Veggies)
-EEE(Stay hydrated!)`;
+    const multiLineInput = `Title2(Health Tips)
+List(Less Sugar)
+List(More Veggies)
+Quote(Stay hydrated!)`;
     
     const parsedMulti = writer.parseInput(multiLineInput);
     const expectedMulti = [
@@ -80,9 +80,9 @@ EEE(Stay hydrated!)`;
     console.log('🔄 Testing error cases...');
     const errorCases = [
         'Invalid input',
-        'AAA()',
+        'Title1()',
         'XYZ(Unknown prefix)',
-        'AAA Missing parentheses'
+        'Title1 Missing parentheses'
     ];
     
     errorCases.forEach((errorCase, index) => {

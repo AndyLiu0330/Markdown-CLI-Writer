@@ -6,21 +6,21 @@ const MarkdownCLIWriter = require('./md-cli.js');
 console.log('🎬 Markdown CLI Writer Demo\n');
 
 // 建立示範內容
-const demoContent = `AAA(Project Documentation)
-BBB(Getting Started)
-CCC(Prerequisites)
-DDD(Node.js version 14 or higher)
-DDD(Basic command line knowledge)
-CCC(Installation)
-DDD(Clone the repository)
-DDD(Run npm start)
-BBB(Features)
-DDD(Convert custom syntax to Markdown)
-DDD(Save as .md files)
-DDD(Multiple input methods)
-EEE(This tool makes documentation writing faster!)
-AAA(Conclusion)
-EEE(Happy documenting!)`;
+const demoContent = `Title1(Project Documentation)
+Title2(Getting Started)
+Title3(Prerequisites)
+List(Node.js version 14 or higher)
+List(Basic command line knowledge)
+Title3(Installation)
+List(Clone the repository)
+List(Run npm start)
+Title2(Features)
+List(Convert custom syntax to Markdown)
+List(Save as .md files)
+List(Multiple input methods)
+Quote(This tool makes documentation writing faster!)
+Title1(Conclusion)
+Quote(Happy documenting!)`;
 
 console.log('📝 Demo Input:');
 console.log('─'.repeat(50));

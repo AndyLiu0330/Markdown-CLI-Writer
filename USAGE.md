@@ -24,11 +24,11 @@ Use the supported syntax format:
 
 | Syntax | Markdown | Example |
 |--------|----------|---------|
-| `AAA(text)` | `# text` | `AAA(My Project)` → `# My Project` |
-| `BBB(text)` | `## text` | `BBB(Features)` → `## Features` |
-| `CCC(text)` | `### text` | `CCC(Setup)` → `### Setup` |
-| `DDD(text)` | `- text` | `DDD(Install npm)` → `- Install npm` |
-| `EEE(text)` | `> text` | `EEE(Important note)` → `> Important note` |
+| `Title1(text)` | `# text` | `Title1(My Project)` → `# My Project` |
+| `Title2(text)` | `## text` | `Title2(Features)` → `## Features` |
+| `Title3(text)` | `### text` | `Title3(Setup)` → `### Setup` |
+| `List(text)` | `- text` | `List(Install npm)` → `- Install npm` |
+| `Quote(text)` | `> text` | `Quote(Important note)` → `> Important note` |
 
 ### 3. Review Generated Markdown
 The tool will show a colored preview of your generated Markdown:

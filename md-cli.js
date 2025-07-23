@@ -24,11 +24,11 @@ function colorize(text, color) {
 
 // Markdown syntax mapping
 const SYNTAX_MAP = {
-    'AAA': '#',      // Heading 1
-    'BBB': '##',     // Heading 2
-    'CCC': '###',    // Heading 3
-    'DDD': '-',      // List item
-    'EEE': '>'       // Quote
+    'Title1': '#',      // Heading 1
+    'Title2': '##',     // Heading 2
+    'Title3': '###',    // Heading 3
+    'List': '-',        // List item
+    'Quote': '>'        // Quote
 };
 
 class MarkdownCLIWriter {
@@ -71,30 +71,30 @@ class MarkdownCLIWriter {
         
         // 語法表格
         console.log(colorize('📝 Supported Syntax:', 'yellow'));
-        console.log(colorize('┌─────────────┬──────────────┬─────────────────────────────┐', 'white'));
-        console.log(colorize('│   Syntax    │   Markdown   │           Example           │', 'white'));
-        console.log(colorize('├─────────────┼──────────────┼─────────────────────────────┤', 'white'));
-        console.log(colorize('│ AAA(text)   │ # text       │ AAA(My Project) → # My Project │', 'white'));
-        console.log(colorize('│ BBB(text)   │ ## text      │ BBB(Features) → ## Features │', 'white'));
-        console.log(colorize('│ CCC(text)   │ ### text     │ CCC(Setup) → ### Setup     │', 'white'));
-        console.log(colorize('│ DDD(text)   │ - text       │ DDD(Install) → - Install   │', 'white'));
-        console.log(colorize('│ EEE(text)   │ > text       │ EEE(Note) → > Note         │', 'white'));
-        console.log(colorize('└─────────────┴──────────────┴─────────────────────────────┘', 'white'));
+        console.log(colorize('┌─────────────────┬──────────────┬───────────────────────────────────┐', 'white'));
+        console.log(colorize('│     Syntax      │   Markdown   │             Example               │', 'white'));
+        console.log(colorize('├─────────────────┼──────────────┼───────────────────────────────────┤', 'white'));
+        console.log(colorize('│ Title1(text)    │ # text       │ Title1(My Project) → # My Project │', 'white'));
+        console.log(colorize('│ Title2(text)    │ ## text      │ Title2(Features) → ## Features   │', 'white'));
+        console.log(colorize('│ Title3(text)    │ ### text     │ Title3(Setup) → ### Setup        │', 'white'));
+        console.log(colorize('│ List(text)      │ - text       │ List(Install) → - Install        │', 'white'));
+        console.log(colorize('│ Quote(text)     │ > text       │ Quote(Note) → > Note             │', 'white'));
+        console.log(colorize('└─────────────────┴──────────────┴───────────────────────────────────┘', 'white'));
         console.log();
 
         // 完整範例
         console.log(colorize('🎯 Complete Example:', 'yellow'));
         console.log(colorize('─'.repeat(30), 'white'));
         console.log(colorize('Input:', 'blue'));
-        console.log('AAA(My Project Documentation)');
-        console.log('BBB(Getting Started)');
-        console.log('CCC(Prerequisites)');
-        console.log('DDD(Node.js version 14+)');
-        console.log('DDD(Basic CLI knowledge)');
-        console.log('BBB(Features)');
-        console.log('DDD(Convert custom syntax)');
-        console.log('DDD(Save as .md files)');
-        console.log('EEE(Perfect for quick docs!)');
+        console.log('Title1(My Project Documentation)');
+        console.log('Title2(Getting Started)');
+        console.log('Title3(Prerequisites)');
+        console.log('List(Node.js version 14+)');
+        console.log('List(Basic CLI knowledge)');
+        console.log('Title2(Features)');
+        console.log('List(Convert custom syntax)');
+        console.log('List(Save as .md files)');
+        console.log('Quote(Perfect for quick docs!)');
         console.log();
         
         console.log(colorize('Output:', 'blue'));
@@ -111,11 +111,11 @@ class MarkdownCLIWriter {
 
         // 使用提示
         console.log(colorize('💡 Quick Tips:', 'yellow'));
-        console.log('• Use AAA for main headings');
-        console.log('• Use BBB for section headings');
-        console.log('• Use CCC for subsection headings');
-        console.log('• Use DDD for list items');
-        console.log('• Use EEE for important quotes');
+        console.log('• Use Title1 for main headings');
+        console.log('• Use Title2 for section headings');
+        console.log('• Use Title3 for subsection headings');
+        console.log('• Use List for list items');
+        console.log('• Use Quote for important quotes');
         console.log();
         console.log(colorize('═'.repeat(60), 'white'));
     }
@@ -126,10 +126,10 @@ class MarkdownCLIWriter {
         if (!trimmed) return null;
 
         // 匹配模式: PREFIX(content)
-        const match = trimmed.match(/^([A-Z]{3})\((.+)\)$/);
+        const match = trimmed.match(/^([A-Za-z0-9]+)\((.+)\)$/);
         if (!match) {
             console.log(colorize(`⚠️  Invalid format: "${trimmed}"`, 'red'));
-            console.log(colorize('   Expected format: AAA(Your Content)', 'white'));
+            console.log(colorize('   Expected format: Title1(Your Content)', 'white'));
             return null;
         }
 
@@ -308,7 +308,7 @@ class MarkdownCLIWriter {
         console.log(colorize('📝 Single Line Input Mode', 'cyan'));
         console.log(colorize('─'.repeat(40), 'white'));
         console.log('Format: PREFIX(content)');
-        console.log('Example: AAA(My Title)');
+        console.log('Example: Title1(My Title)');
         console.log();
         
         const input = await this.question('Enter your syntax: ');
@@ -355,15 +355,15 @@ class MarkdownCLIWriter {
         console.log(colorize('🎯 Example Mode', 'cyan'));
         console.log(colorize('─'.repeat(40), 'white'));
         
-        const example = `AAA(Sample Documentation)
-BBB(Getting Started)
-CCC(Prerequisites)
-DDD(Node.js installed)
-DDD(Basic CLI knowledge)
-BBB(Features)
-DDD(Convert syntax to Markdown)
-DDD(Save as .md files)
-EEE(Perfect for quick documentation!)`;
+        const example = `Title1(Sample Documentation)
+Title2(Getting Started)
+Title3(Prerequisites)
+List(Node.js installed)
+List(Basic CLI knowledge)
+Title2(Features)
+List(Convert syntax to Markdown)
+List(Save as .md files)
+Quote(Perfect for quick documentation!)`;
         
         console.log(colorize('Using example content:', 'yellow'));
         console.log(example);

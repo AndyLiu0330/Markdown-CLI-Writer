@@ -14,22 +14,22 @@ npm test
 
 ## 📝 Supported Syntax
 
-| Input Format | Markdown Output | Description |
-|--------------|-----------------|-------------|
-| `AAA(text)`  | `# text`        | Heading 1 |
-| `BBB(text)`  | `## text`       | Heading 2 |
-| `CCC(text)`  | `### text`      | Heading 3 |
-| `DDD(text)`  | `- text`        | List item |
-| `EEE(text)`  | `> text`        | Quote |
+| Input Format     | Markdown Output | Description |
+|------------------|-----------------|-------------|
+| `Title1(text)`   | `# text`        | Heading 1 |
+| `Title2(text)`   | `## text`       | Heading 2 |
+| `Title3(text)`   | `### text`      | Heading 3 |
+| `List(text)`     | `- text`        | List item |
+| `Quote(text)`    | `> text`        | Quote |
 
 ## 💡 Example Usage
 
 **Input:**
 ```
-BBB(Health Tips)
-DDD(Less Sugar)
-DDD(More Veggies)
-EEE(Remember to stay hydrated!)
+Title2(Health Tips)
+List(Less Sugar)
+List(More Veggies)
+Quote(Remember to stay hydrated!)
 ```
 
 **Output:**
@@ -138,11 +138,11 @@ The tests cover:
 Convert custom syntax to Markdown format
 
 Supported syntax:
-  AAA(text) → # Heading 1
-  BBB(text) → ## Heading 2
-  CCC(text) → ### Heading 3
-  DDD(text) → - List item
-  EEE(text) → > Quote
+  Title1(text) → # Heading 1
+  Title2(text) → ## Heading 2
+  Title3(text) → ### Heading 3
+  List(text) → - List item
+  Quote(text) → > Quote
 
 📝 Input Methods:
 1. Single line input
