@@ -10,7 +10,8 @@
     "start": "node md-cli.js",
     "dev": "node --watch md-cli.js",
     "test": "node test-simple.js",
-    "demo": "node demo.js"
+    "demo": "node demo.js",
+    "show-menu": "node test-cli-menu.js"
   },
   "keywords": ["cli", "markdown", "generator", "nodejs", "converter"],
   "author": "",

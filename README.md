@@ -43,11 +43,40 @@ EEE(Remember to stay hydrated!)
 ## ⚙️ Features
 
 - ✅ **Zero Dependencies**: Uses only Node.js built-in modules
+- ✅ **Interactive CLI Menu**: Easy-to-use menu system with persistent navigation
 - ✅ **Multiple Input Methods**: Single line, multi-line, file input, or examples
+- ✅ **Live Help System**: Type `/guide` anytime to see syntax table and examples
 - ✅ **File Generation**: Save output as `.md` files with custom names
 - ✅ **Terminal Display**: View results with syntax highlighting
 - ✅ **Error Handling**: Clear validation and error messages
 - ✅ **Cross-platform**: Works on Windows, macOS, and Linux
+
+## 🎯 CLI Menu Interface
+
+When you run the tool, you'll see an interactive menu:
+
+```
+🖋️  Markdown CLI Writer
+Convert custom syntax to Markdown format
+
+Type /guide to see syntax table and examples
+
+📋 Main Menu:
+══════════════════════════════════════════════════
+1. 📝 Single line input
+2. 📄 Multi-line input
+3. 📂 Load from file
+4. 🎯 Example mode
+5. 📖 Show syntax guide (/guide)
+0. ❌ Exit
+══════════════════════════════════════════════════
+```
+
+### 🔍 Special Commands
+
+- **`/guide`**: Type this anywhere to see the complete syntax table and examples
+- **`5`**: Select option 5 from the main menu to view the syntax guide
+- **`0`**: Exit the application
 
 ## 🎯 User Flow
 

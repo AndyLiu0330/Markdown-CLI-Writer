@@ -44,13 +44,80 @@ class MarkdownCLIWriter {
         console.clear();
         console.log(colorize('🖋️  Markdown CLI Writer', 'cyan'));
         console.log(colorize('Convert custom syntax to Markdown format\n', 'white'));
-        console.log(colorize('Supported syntax:', 'yellow'));
-        console.log(colorize('  AAA(text) → # Heading 1', 'white'));
-        console.log(colorize('  BBB(text) → ## Heading 2', 'white'));
-        console.log(colorize('  CCC(text) → ### Heading 3', 'white'));
-        console.log(colorize('  DDD(text) → - List item', 'white'));
-        console.log(colorize('  EEE(text) → > Quote', 'white'));
+        console.log(colorize('Type /guide to see syntax table and examples', 'yellow'));
         console.log();
+    }
+
+    // 顯示主選單
+    showMainMenu() {
+        console.log(colorize('📋 Main Menu:', 'blue'));
+        console.log(colorize('═'.repeat(50), 'white'));
+        console.log('1. 📝 Single line input');
+        console.log('2. 📄 Multi-line input');
+        console.log('3. 📂 Load from file');
+        console.log('4. 🎯 Example mode');
+        console.log('5. 📖 Show syntax guide (/guide)');
+        console.log('0. ❌ Exit');
+        console.log(colorize('═'.repeat(50), 'white'));
+        console.log();
+    }
+
+    // 顯示語法指南
+    showSyntaxGuide() {
+        console.clear();
+        console.log(colorize('📖 Markdown CLI Writer - Syntax Guide', 'cyan'));
+        console.log(colorize('═'.repeat(60), 'white'));
+        console.log();
+        
+        // 語法表格
+        console.log(colorize('📝 Supported Syntax:', 'yellow'));
+        console.log(colorize('┌─────────────┬──────────────┬─────────────────────────────┐', 'white'));
+        console.log(colorize('│   Syntax    │   Markdown   │           Example           │', 'white'));
+        console.log(colorize('├─────────────┼──────────────┼─────────────────────────────┤', 'white'));
+        console.log(colorize('│ AAA(text)   │ # text       │ AAA(My Project) → # My Project │', 'white'));
+        console.log(colorize('│ BBB(text)   │ ## text      │ BBB(Features) → ## Features │', 'white'));
+        console.log(colorize('│ CCC(text)   │ ### text     │ CCC(Setup) → ### Setup     │', 'white'));
+        console.log(colorize('│ DDD(text)   │ - text       │ DDD(Install) → - Install   │', 'white'));
+        console.log(colorize('│ EEE(text)   │ > text       │ EEE(Note) → > Note         │', 'white'));
+        console.log(colorize('└─────────────┴──────────────┴─────────────────────────────┘', 'white'));
+        console.log();
+
+        // 完整範例
+        console.log(colorize('🎯 Complete Example:', 'yellow'));
+        console.log(colorize('─'.repeat(30), 'white'));
+        console.log(colorize('Input:', 'blue'));
+        console.log('AAA(My Project Documentation)');
+        console.log('BBB(Getting Started)');
+        console.log('CCC(Prerequisites)');
+        console.log('DDD(Node.js version 14+)');
+        console.log('DDD(Basic CLI knowledge)');
+        console.log('BBB(Features)');
+        console.log('DDD(Convert custom syntax)');
+        console.log('DDD(Save as .md files)');
+        console.log('EEE(Perfect for quick docs!)');
+        console.log();
+        
+        console.log(colorize('Output:', 'blue'));
+        console.log(colorize('# My Project Documentation', 'red'));
+        console.log(colorize('## Getting Started', 'yellow'));
+        console.log(colorize('### Prerequisites', 'blue'));
+        console.log(colorize('- Node.js version 14+', 'green'));
+        console.log(colorize('- Basic CLI knowledge', 'green'));
+        console.log(colorize('## Features', 'yellow'));
+        console.log(colorize('- Convert custom syntax', 'green'));
+        console.log(colorize('- Save as .md files', 'green'));
+        console.log(colorize('> Perfect for quick docs!', 'cyan'));
+        console.log();
+
+        // 使用提示
+        console.log(colorize('💡 Quick Tips:', 'yellow'));
+        console.log('• Use AAA for main headings');
+        console.log('• Use BBB for section headings');
+        console.log('• Use CCC for subsection headings');
+        console.log('• Use DDD for list items');
+        console.log('• Use EEE for important quotes');
+        console.log();
+        console.log(colorize('═'.repeat(60), 'white'));
     }
 
     // 解析單行輸入
@@ -151,57 +218,20 @@ class MarkdownCLIWriter {
     // 提問函數
     async question(prompt) {
         return new Promise((resolve) => {
-            this.rl.question(prompt, resolve);
+            this.rl.question(prompt, (answer) => {
+                // 檢查特殊命令
+                if (answer.toLowerCase() === '/guide') {
+                    console.log();
+                    this.showSyntaxGuide();
+                    console.log(colorize('\n按 Enter 鍵繼續...', 'yellow'));
+                    this.rl.question('', () => {
+                        resolve(this.question(prompt));
+                    });
+                } else {
+                    resolve(answer);
+                }
+            });
         });
-    }
-
-    // 收集輸入
-    async collectInput() {
-        console.log(colorize('📝 Input Methods:', 'yellow'));
-        console.log('1. Single line input');
-        console.log('2. Multi-line input');
-        console.log('3. Load from file');
-        console.log('4. Example mode');
-        
-        const choice = await this.question('\nChoose input method (1-4): ');
-        
-        switch (choice.trim()) {
-            case '1':
-                return await this.question('Enter your syntax (e.g., AAA(My Title)): ');
-                
-            case '2':
-                console.log(colorize('\n📝 Multi-line input mode', 'yellow'));
-                console.log(colorize('Enter your content line by line. Type "END" to finish.\n', 'white'));
-                
-                const lines = [];
-                let lineNum = 1;
-                while (true) {
-                    const line = await this.question(`Line ${lineNum}: `);
-                    if (line.trim().toUpperCase() === 'END') break;
-                    if (line.trim()) lines.push(line);
-                    lineNum++;
-                }
-                return lines.join('\n');
-                
-            case '3':
-                const filepath = await this.question('Enter file path: ');
-                try {
-                    return await fs.readFile(filepath, 'utf8');
-                } catch (error) {
-                    console.log(colorize(`❌ Error reading file: ${error.message}`, 'red'));
-                    return await this.collectInput();
-                }
-                
-            case '4':
-                console.log(colorize('\n🎯 Using example content:', 'yellow'));
-                const example = `BBB(Health Tips)\nDDD(Less Sugar)\nDDD(More Veggies)\nEEE(Remember to stay hydrated!)`;
-                console.log(colorize(example, 'white'));
-                return example;
-                
-            default:
-                console.log(colorize('Invalid choice. Please try again.', 'red'));
-                return await this.collectInput();
-        }
     }
 
     // 詢問是否儲存檔案
@@ -224,60 +254,155 @@ class MarkdownCLIWriter {
 
     // 主要應用程式流程
     async run() {
-        try {
-            this.showWelcome();
-
-            while (true) {
-                // 收集輸入
-                const input = await this.collectInput();
-                if (!input.trim()) {
-                    console.log(colorize('⚠️  No content provided', 'yellow'));
-                    continue;
-                }
-
-                // 解析輸入
-                console.log(colorize('\n🔄 Parsing input...', 'blue'));
-                const parsedContent = this.parseInput(input);
-
-                if (parsedContent.length === 0) {
-                    console.log(colorize('❌ No valid content to process', 'red'));
-                    
-                    const retry = await this.question('Would you like to try again? (Y/N): ');
-                    if (!retry.toLowerCase().startsWith('y')) break;
-                    continue;
-                }
-
-                // 生成 Markdown
-                const markdownContent = this.generateMarkdown(parsedContent);
-                
-                // 顯示預覽
-                this.displayMarkdown(markdownContent);
-
-                // 詢問是否儲存
-                const shouldSave = await this.askSaveFile();
-
-                if (shouldSave) {
-                    const defaultFilename = this.getFilename(parsedContent);
-                    const filename = await this.askCustomFilename(defaultFilename);
-                    await this.saveToFile(markdownContent, filename);
-                } else {
-                    console.log(colorize('\n📄 Markdown content displayed above', 'white'));
-                }
-
-                // 詢問是否繼續
-                const continueApp = await this.question('Would you like to process more content? (Y/N): ');
-                if (!continueApp.toLowerCase().startsWith('y')) break;
-                
+        this.showWelcome();
+        
+        while (true) {
+            this.showMainMenu();
+            
+            const choice = await this.question(colorize('請選擇選項 (0-5): ', 'cyan'));
+            
+            // 檢查特殊命令
+            if (choice.toLowerCase() === '/guide' || choice === '5') {
+                this.showSyntaxGuide();
+                await this.question(colorize('\n按 Enter 鍵回到主選單...', 'yellow'));
+                console.clear();
+                this.showWelcome();
+                continue;
+            }
+            
+            switch (choice) {
+                case '1':
+                    await this.handleSingleLineInput();
+                    break;
+                case '2':
+                    await this.handleMultiLineInput();
+                    break;
+                case '3':
+                    await this.handleFileInput();
+                    break;
+                case '4':
+                    await this.runExample();
+                    break;
+                case '0':
+                    console.log(colorize('\n👋 感謝使用 Markdown CLI Writer！', 'cyan'));
+                    this.rl.close();
+                    return;
+                default:
+                    console.log(colorize('❌ 無效的選項，請選擇 0-5', 'red'));
+                    await this.question(colorize('按 Enter 鍵繼續...', 'yellow'));
+                    console.clear();
+                    this.showWelcome();
+            }
+            
+            if (choice !== '0') {
+                await this.question(colorize('\n按 Enter 鍵回到主選單...', 'yellow'));
                 console.clear();
                 this.showWelcome();
             }
+        }
+    }
 
-            console.log(colorize('\n👋 Thank you for using Markdown CLI Writer!', 'green'));
-            this.rl.close();
+    // 處理單行輸入
+    async handleSingleLineInput() {
+        console.clear();
+        console.log(colorize('📝 Single Line Input Mode', 'cyan'));
+        console.log(colorize('─'.repeat(40), 'white'));
+        console.log('Format: PREFIX(content)');
+        console.log('Example: AAA(My Title)');
+        console.log();
+        
+        const input = await this.question('Enter your syntax: ');
+        await this.processInput(input);
+    }
 
+    // 處理多行輸入
+    async handleMultiLineInput() {
+        console.clear();
+        console.log(colorize('📄 Multi-Line Input Mode', 'cyan'));
+        console.log(colorize('─'.repeat(40), 'white'));
+        console.log('Enter multiple lines. Type "END" to finish.');
+        console.log();
+        
+        const lines = [];
+        while (true) {
+            const line = await this.question('> ');
+            if (line.toUpperCase() === 'END') break;
+            lines.push(line);
+        }
+        
+        await this.processInput(lines.join('\n'));
+    }
+
+    // 處理檔案輸入
+    async handleFileInput() {
+        console.clear();
+        console.log(colorize('📂 File Input Mode', 'cyan'));
+        console.log(colorize('─'.repeat(40), 'white'));
+        
+        const filepath = await this.question('Enter file path: ');
+        try {
+            const content = await fs.readFile(filepath, 'utf8');
+            console.log(colorize(`✅ File loaded: ${filepath}`, 'green'));
+            await this.processInput(content);
         } catch (error) {
-            console.log(colorize(`\n❌ An error occurred: ${error.message}`, 'red'));
-            this.rl.close();
+            console.log(colorize(`❌ Error reading file: ${error.message}`, 'red'));
+        }
+    }
+
+    // 運行範例
+    async runExample() {
+        console.clear();
+        console.log(colorize('🎯 Example Mode', 'cyan'));
+        console.log(colorize('─'.repeat(40), 'white'));
+        
+        const example = `AAA(Sample Documentation)
+BBB(Getting Started)
+CCC(Prerequisites)
+DDD(Node.js installed)
+DDD(Basic CLI knowledge)
+BBB(Features)
+DDD(Convert syntax to Markdown)
+DDD(Save as .md files)
+EEE(Perfect for quick documentation!)`;
+        
+        console.log(colorize('Using example content:', 'yellow'));
+        console.log(example);
+        console.log();
+        
+        await this.processInput(example);
+    }
+
+    // 處理輸入並生成 Markdown
+    async processInput(input) {
+        if (!input.trim()) {
+            console.log(colorize('⚠️  No content provided', 'yellow'));
+            return;
+        }
+
+        // 解析輸入
+        console.log(colorize('\n🔄 Parsing input...', 'blue'));
+        const parsedContent = this.parseInput(input);
+
+        if (parsedContent.length === 0) {
+            console.log(colorize('❌ No valid content to process', 'red'));
+            return;
+        }
+
+        // 生成 Markdown
+        const markdownContent = this.generateMarkdown(parsedContent);
+        
+        // 顯示預覽
+        this.displayMarkdown(markdownContent);
+
+        // 詢問是否儲存
+        const shouldSave = await this.askSaveFile();
+
+        if (shouldSave) {
+            const defaultFilename = this.getFilename(parsedContent);
+            const filename = await this.askCustomFilename(defaultFilename);
+            await this.saveToFile(markdownContent, filename);
+        } else {
+            console.log(colorize('\n📄 Markdown content displayed above', 'white'));
         }
     }
 }
