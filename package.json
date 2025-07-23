@@ -1,0 +1,26 @@
+{
+  "name": "markdown-cli-writer",
+  "version": "1.0.0",
+  "description": "A Node.js CLI tool that converts custom syntax to Markdown",
+  "main": "md-cli.js",
+  "bin": {
+    "md-cli": "./md-cli.js"
+  },
+  "scripts": {
+    "start": "node md-cli.js",
+    "dev": "node --watch md-cli.js",
+    "test": "node test-simple.js",
+    "demo": "node demo.js"
+  },
+  "keywords": ["cli", "markdown", "generator", "nodejs", "converter"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "inquirer": "^8.2.6",
+    "chalk": "^4.1.2",
+    "commander": "^11.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
