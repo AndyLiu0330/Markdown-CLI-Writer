@@ -359,7 +359,7 @@ class MarkdownCLIWriter {
                     await this.runExample();
                     break;
                 case '0':
-                    console.log(colorize('\n👋 感謝使用 Markdown CLI Writer！', 'cyan'));
+                    console.log(colorize('\n👋 Thanks for using Markdown CLI Writer！', 'cyan'));
                     this.rl.close();
                     return;
                 default:

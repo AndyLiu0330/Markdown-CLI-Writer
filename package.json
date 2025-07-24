@@ -10,12 +10,13 @@
     "start": "node md-cli-simple.js",
     "start-full": "node md-cli.js",
     "dev": "node --watch md-cli-simple.js",
-    "test": "node test-simple.js",
-    "test-comprehensive": "node test-comprehensive.js",
+    "test": "node tests/test-simple.js",
+    "test-comprehensive": "node tests/test-comprehensive.js",
     "demo": "node demo.js",
     "stats": "node md-cli-simple.js stats",
-    "show-menu": "node test-cli-menu.js",
-    "test-guide": "node test-guide-functionality.js"
+    "show-menu": "node tests/test-cli-menu.js",
+    "test-guide": "node tests/test-guide-functionality.js",
+    "test-all": "node tests/test.js"
   },
   "keywords": ["cli", "markdown", "generator", "nodejs", "converter"],
   "author": "AndyLiu0330",
