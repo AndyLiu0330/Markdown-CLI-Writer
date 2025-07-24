@@ -3,8 +3,11 @@
 const readline = require('readline');
 const fs = require('fs').promises;
 const path = require('path');
+const chalk = require('chalk');
+const { Command } = require('commander');
+require('dotenv').config();
 
-// ANSI 顏色代碼
+// Legacy ANSI 顏色代碼 (保持向後兼容)
 const colors = {
     reset: '\x1b[0m',
     red: '\x1b[31m',
@@ -17,18 +20,36 @@ const colors = {
     bold: '\x1b[1m'
 };
 
-// 顏色輔助函數
+// 新的顏色輔助函數使用 chalk
 function colorize(text, color) {
-    return `${colors[color]}${text}${colors.reset}`;
+    switch(color) {
+        case 'red': return chalk.red(text);
+        case 'green': return chalk.green(text);
+        case 'yellow': return chalk.yellow(text);
+        case 'blue': return chalk.blue(text);
+        case 'magenta': return chalk.magenta(text);
+        case 'cyan': return chalk.cyan(text);
+        case 'white': return chalk.white(text);
+        case 'bold': return chalk.bold(text);
+        default: return text;
+    }
 }
 
-// Markdown syntax mapping
+// Markdown syntax mapping - supports both current and PRD syntax
 const SYNTAX_MAP = {
+    // Current syntax (backward compatibility)
     'Title1': '#',      // Heading 1
     'Title2': '##',     // Heading 2
     'Title3': '###',    // Heading 3
     'List': '-',        // List item
-    'Quote': '>'        // Quote
+    'Quote': '>',       // Quote
+    
+    // PRD original syntax (AAA, BBB, CCC, DDD, EEE)
+    'AAA': '#',         // Heading 1 (PRD)
+    'BBB': '##',        // Heading 2 (PRD)
+    'CCC': '###',       // Heading 3 (PRD)
+    'DDD': '-',         // List item (PRD)
+    'EEE': '>'          // Quote (PRD)
 };
 
 class MarkdownCLIWriter {
@@ -79,11 +100,19 @@ class MarkdownCLIWriter {
         console.log(colorize('│ Title3(text)    │ ### text     │ Title3(Setup) → ### Setup        │', 'white'));
         console.log(colorize('│ List(text)      │ - text       │ List(Install) → - Install        │', 'white'));
         console.log(colorize('│ Quote(text)     │ > text       │ Quote(Note) → > Note             │', 'white'));
+        console.log(colorize('├─────────────────┼──────────────┼───────────────────────────────────┤', 'white'));
+        console.log(colorize('│ AAA(text)       │ # text       │ AAA(My Title) → # My Title       │', 'cyan'));
+        console.log(colorize('│ BBB(text)       │ ## text      │ BBB(Section) → ## Section        │', 'cyan'));
+        console.log(colorize('│ CCC(text)       │ ### text     │ CCC(Subsection) → ### Subsection │', 'cyan'));
+        console.log(colorize('│ DDD(text)       │ - text       │ DDD(Item) → - Item               │', 'cyan'));
+        console.log(colorize('│ EEE(text)       │ > text       │ EEE(Quote) → > Quote             │', 'cyan'));
         console.log(colorize('└─────────────────┴──────────────┴───────────────────────────────────┘', 'white'));
+        console.log();
+        console.log(colorize('💡 Both syntax styles are supported for backward compatibility', 'magenta'));
         console.log();
 
         // 完整範例
-        console.log(colorize('🎯 Complete Example:', 'yellow'));
+        console.log(colorize('🎯 Complete Example (Current Syntax):', 'yellow'));
         console.log(colorize('─'.repeat(30), 'white'));
         console.log(colorize('Input:', 'blue'));
         console.log('Title1(My Project Documentation)');
@@ -97,7 +126,21 @@ class MarkdownCLIWriter {
         console.log('Quote(Perfect for quick docs!)');
         console.log();
         
-        console.log(colorize('Output:', 'blue'));
+        console.log(colorize('🎯 Complete Example (PRD Syntax):', 'cyan'));
+        console.log(colorize('─'.repeat(30), 'white'));
+        console.log(colorize('Input:', 'blue'));
+        console.log('AAA(My Project Documentation)');
+        console.log('BBB(Getting Started)');
+        console.log('CCC(Prerequisites)');
+        console.log('DDD(Node.js version 14+)');
+        console.log('DDD(Basic CLI knowledge)');
+        console.log('BBB(Features)');
+        console.log('DDD(Convert custom syntax)');
+        console.log('DDD(Save as .md files)');
+        console.log('EEE(Perfect for quick docs!)');
+        console.log();
+        
+        console.log(colorize('Output (Same for both):', 'blue'));
         console.log(colorize('# My Project Documentation', 'red'));
         console.log(colorize('## Getting Started', 'yellow'));
         console.log(colorize('### Prerequisites', 'blue'));
@@ -111,11 +154,12 @@ class MarkdownCLIWriter {
 
         // 使用提示
         console.log(colorize('💡 Quick Tips:', 'yellow'));
-        console.log('• Use Title1 for main headings');
-        console.log('• Use Title2 for section headings');
-        console.log('• Use Title3 for subsection headings');
-        console.log('• Use List for list items');
-        console.log('• Use Quote for important quotes');
+        console.log('• Use Title1/AAA for main headings');
+        console.log('• Use Title2/BBB for section headings');
+        console.log('• Use Title3/CCC for subsection headings');
+        console.log('• Use List/DDD for list items');
+        console.log('• Use Quote/EEE for important quotes');
+        console.log('• Both syntax styles work interchangeably');
         console.log();
         console.log(colorize('═'.repeat(60), 'white'));
     }
@@ -388,7 +432,28 @@ class MarkdownCLIWriter {
         console.log(colorize('🎯 Example Mode', 'cyan'));
         console.log(colorize('─'.repeat(40), 'white'));
         
-        const example = `Title1(Sample Documentation)
+        const choice = await this.question('Choose example: (1) Current Syntax (2) PRD Syntax (3) Mixed: ');
+        
+        let example;
+        if (choice === '2') {
+            example = `AAA(Sample Documentation)
+BBB(Getting Started)
+CCC(Prerequisites)
+DDD(Node.js installed)
+DDD(Basic CLI knowledge)
+BBB(Features)
+DDD(Convert syntax to Markdown)
+DDD(Save as .md files)
+EEE(Perfect for quick documentation!)`;
+        } else if (choice === '3') {
+            example = `AAA(Mixed Syntax Example)
+Title2(Current Syntax Section)
+DDD(PRD syntax list item)
+List(Current syntax list item)
+EEE(PRD style quote)
+Quote(Current style quote)`;
+        } else {
+            example = `Title1(Sample Documentation)
 Title2(Getting Started)
 Title3(Prerequisites)
 List(Node.js installed)
@@ -397,6 +462,7 @@ Title2(Features)
 List(Convert syntax to Markdown)
 List(Save as .md files)
 Quote(Perfect for quick documentation!)`;
+        }
         
         console.log(colorize('Using example content:', 'yellow'));
         console.log(example);
@@ -446,10 +512,53 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
+// Commander.js CLI 設定
+const program = new Command();
+
+program
+    .name('md-cli')
+    .description('A Node.js CLI tool that converts custom syntax to Markdown')
+    .version('1.0.0');
+
+program
+    .option('-o, --output <directory>', 'specify output directory')
+    .option('-f, --format <type>', 'output format (md, json, html)', 'md')
+    .option('-s, --syntax <style>', 'syntax style (current, prd, mixed)', 'current')
+    .option('--no-interactive', 'run in non-interactive mode')
+    .option('--example', 'show example and exit')
+    .option('--guide', 'show syntax guide and exit');
+
+program
+    .command('convert <input>')
+    .description('convert input string to markdown')
+    .action(async (input, options) => {
+        const app = new MarkdownCLIWriter();
+        await app.processInput(input);
+    });
+
+program
+    .command('file <filepath>')
+    .description('convert file content to markdown')
+    .action(async (filepath, options) => {
+        try {
+            const content = await fs.readFile(filepath, 'utf8');
+            const app = new MarkdownCLIWriter();
+            await app.processInput(content);
+        } catch (error) {
+            console.log(colorize(`❌ Error reading file: ${error.message}`, 'red'));
+        }
+    });
+
 // 執行應用程式
 if (require.main === module) {
-    const app = new MarkdownCLIWriter();
-    app.run();
+    // Parse command line arguments
+    program.parse();
+    
+    // If no command provided, run interactive mode
+    if (process.argv.length <= 2) {
+        const app = new MarkdownCLIWriter();
+        app.run();
+    }
 }
 
 module.exports = MarkdownCLIWriter;

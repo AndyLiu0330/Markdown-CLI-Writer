@@ -1,19 +1,26 @@
 # 🖋️ Markdown CLI Writer
 
-A Node.js CLI tool that converts custom syntax to Markdown format quickly and efficiently.
+A Node.js CLI tool that converts custom syntax to Markdown format quickly and efficiently. Supports both original PRD syntax and enhanced current syntax for maximum compatibility.
 
 ## 🚀 Quick Start
 
 ```bash
-# Run the CLI tool
+# Run the CLI tool (main version)
 npm start
+
+# Run the simple/reliable version
+node md-cli-simple.js
 
 # Run tests
 npm test
+
+# Run comprehensive tests
+node test-comprehensive.js
 ```
 
 ## 📝 Supported Syntax
 
+### Current Syntax (Enhanced)
 | Input Format     | Markdown Output | Description |
 |------------------|-----------------|-------------|
 | `Title1(text)`   | `# text`        | Heading 1 |
@@ -22,8 +29,20 @@ npm test
 | `List(text)`     | `- text`        | List item |
 | `Quote(text)`    | `> text`        | Quote |
 
+### PRD Original Syntax
+| Input Format     | Markdown Output | Description |
+|------------------|-----------------|-------------|
+| `AAA(text)`      | `# text`        | Heading 1 (PRD) |
+| `BBB(text)`      | `## text`       | Heading 2 (PRD) |
+| `CCC(text)`      | `### text`      | Heading 3 (PRD) |
+| `DDD(text)`      | `- text`        | List item (PRD) |
+| `EEE(text)`      | `> text`        | Quote (PRD) |
+
+💡 **Both syntax styles are fully supported and can be mixed in the same document!**
+
 ## 💡 Example Usage
 
+### Current Syntax Example
 **Input:**
 ```
 Title2(Health Tips)
@@ -40,14 +59,56 @@ Quote(Remember to stay hydrated!)
 > Remember to stay hydrated!
 ```
 
+### PRD Syntax Example
+**Input:**
+```
+BBB(Health Tips)
+DDD(Less Sugar)
+DDD(More Veggies)
+EEE(Remember to stay hydrated!)
+```
+
+**Output:**
+```markdown
+## Health Tips
+- Less Sugar
+- More Veggies
+> Remember to stay hydrated!
+```
+
+### Mixed Syntax Example
+**Input:**
+```
+AAA(Project Documentation)
+Title2(Getting Started)
+DDD(Install Node.js)
+List(Run npm install)
+EEE(Both syntaxes work together!)
+```
+
+**Output:**
+```markdown
+# Project Documentation
+## Getting Started
+- Install Node.js
+- Run npm install
+> Both syntaxes work together!
+```
+
 ## ⚙️ Features
 
-- ✅ **Zero Dependencies**: Uses only Node.js built-in modules
+- ✅ **Dual Syntax Support**: Both current and PRD syntax styles supported
+- ✅ **Backward Compatibility**: Existing syntax continues to work
+- ✅ **Mixed Syntax**: Use both styles in the same document
+- ✅ **Zero Dependencies**: Uses only Node.js built-in modules (simple version)
 - ✅ **Interactive CLI Menu**: Easy-to-use menu system with persistent navigation
 - ✅ **Multiple Input Methods**: Single line, multi-line, file input, or examples
 - ✅ **Live Help System**: Type `/guide` anytime to see syntax table and examples
 - ✅ **File Generation**: Save output as `.md` files with custom names
 - ✅ **Terminal Display**: View results with syntax highlighting
+- ✅ **Error Handling**: Comprehensive validation and helpful error messages
+- ✅ **Cross-Platform**: Works on Windows, macOS, and Linux
+- ✅ **Comprehensive Testing**: Full test suite included
 - ✅ **Error Handling**: Clear validation and error messages
 - ✅ **Cross-platform**: Works on Windows, macOS, and Linux
 
