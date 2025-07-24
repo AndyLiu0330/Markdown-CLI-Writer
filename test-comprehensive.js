@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Comprehensive test suite for Markdown CLI Writer
-const MarkdownCLIWriter = require('./md-cli-simple.js');
+const { MarkdownCLIWriter, MarkdownAnalyzer } = require('./md-cli-simple.js');
 
 function testSyntaxParsing() {
     console.log('🧪 Testing Syntax Parsing...');
@@ -179,6 +179,79 @@ function testFilenameGeneration() {
     return passed === tests.length;
 }
 
+function testStatisticsAnalyzer() {
+    console.log('🧪 Testing Statistics Analyzer...');
+    
+    const analyzer = new MarkdownAnalyzer();
+    
+    const testMarkdown = `# Main Title
+## Section One
+This is a paragraph with **bold** and *italic* text.
+
+### Subsection
+- List item 1
+- List item 2
+- List item 3
+
+> This is a quote
+> With multiple lines
+
+Check out [this link](https://example.com) and ![this image](image.png).
+
+\`\`\`javascript
+console.log("Hello World");
+\`\`\`
+
+Another paragraph here.`;
+    
+    const stats = analyzer.analyzeMarkdown(testMarkdown);
+    
+    let passed = 0;
+    const tests = [
+        { property: 'wordCount', expected: 43, description: 'Word count' }, // More accurate count
+        { property: 'headingLevels.h1', expected: 1, description: 'H1 headings' },
+        { property: 'headingLevels.h2', expected: 1, description: 'H2 headings' },
+        { property: 'headingLevels.h3', expected: 1, description: 'H3 headings' },
+        { property: 'listItemCount', expected: 3, description: 'List items' },
+        { property: 'quoteCount', expected: 2, description: 'Quote lines' },
+        { property: 'linkCount', expected: 2, description: 'Links' }, // Both link and image link
+        { property: 'imageCount', expected: 1, description: 'Images' },
+        { property: 'codeBlockCount', expected: 2, description: 'Code blocks' } // Opening and closing ```
+    ];
+    
+    tests.forEach(test => {
+        const actual = test.property.includes('.') ? 
+            test.property.split('.').reduce((obj, key) => obj[key], stats) : 
+            stats[test.property];
+            
+        if (actual === test.expected) {
+            console.log(`✅ ${test.description}: ${actual}`);
+            passed++;
+        } else {
+            console.log(`❌ ${test.description}: Expected ${test.expected}, got ${actual}`);
+        }
+    });
+    
+    // Test report generation
+    try {
+        const consoleReport = analyzer.generateReport('test.md', 'console');
+        const jsonReport = analyzer.generateReport('test.md', 'json');
+        
+        if (consoleReport.includes('📊 Markdown Statistics Report') && 
+            JSON.parse(jsonReport).filename === 'test.md') {
+            console.log('✅ Report generation works correctly');
+            passed++;
+        } else {
+            console.log('❌ Report generation failed');
+        }
+    } catch (error) {
+        console.log('❌ Report generation error:', error.message);
+    }
+    
+    console.log(`\n📊 Statistics Tests: ${passed}/${tests.length + 1} passed\n`);
+    return passed === tests.length + 1;
+}
+
 async function runAllTests() {
     console.log('🚀 Starting Comprehensive Test Suite\n');
     console.log('=' .repeat(60));
@@ -188,7 +261,8 @@ async function runAllTests() {
         testMultilineParsing(),
         testMixedSyntax(),
         testErrorHandling(),
-        testFilenameGeneration()
+        testFilenameGeneration(),
+        testStatisticsAnalyzer()
     ];
     
     const totalPassed = results.filter(r => r).length;

@@ -1,0 +1,19 @@
+AAA(PRD Original Syntax Example)
+BBB(Main Features)
+DDD(Heading 1 with AAA)
+DDD(Heading 2 with BBB)  
+DDD(Heading 3 with CCC)
+DDD(List items with DDD)
+DDD(Quotes with EEE)
+
+BBB(Sample Content)
+CCC(Prerequisites)
+DDD(Node.js installed)
+DDD(Basic command line knowledge)
+
+CCC(Quick Start)
+DDD(Run the CLI tool)
+DDD(Choose your input method)
+DDD(Generate markdown files)
+
+EEE(This follows the original PRD specification exactly!)

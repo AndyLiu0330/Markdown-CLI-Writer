@@ -37,6 +37,173 @@ const SYNTAX_MAP = {
     'EEE': '>'          // Quote (PRD)
 };
 
+// Markdown Statistics Analyzer
+class MarkdownAnalyzer {
+    constructor() {
+        this.stats = {
+            wordCount: 0,
+            paragraphCount: 0,
+            headingLevels: { h1: 0, h2: 0, h3: 0, h4: 0, h5: 0, h6: 0 },
+            linkCount: 0,
+            imageCount: 0,
+            listItemCount: 0,
+            quoteCount: 0,
+            codeBlockCount: 0,
+            plainTextRatio: 0,
+            formattingRatio: 0
+        };
+    }
+
+    analyzeMarkdown(content) {
+        this.resetStats();
+        const lines = content.split('\n').filter(line => line.trim() !== '');
+        
+        let totalCharacters = content.length;
+        let formattingCharacters = 0;
+        
+        for (const line of lines) {
+            this.analyzeLine(line);
+            formattingCharacters += this.countFormattingCharacters(line);
+        }
+        
+        // Calculate paragraphs (groups of non-empty lines)
+        this.stats.paragraphCount = this.countParagraphs(content);
+        
+        // Calculate ratios
+        this.stats.plainTextRatio = ((totalCharacters - formattingCharacters) / totalCharacters * 100).toFixed(1);
+        this.stats.formattingRatio = (formattingCharacters / totalCharacters * 100).toFixed(1);
+        
+        return this.stats;
+    }
+
+    resetStats() {
+        this.stats = {
+            wordCount: 0,
+            paragraphCount: 0,
+            headingLevels: { h1: 0, h2: 0, h3: 0, h4: 0, h5: 0, h6: 0 },
+            linkCount: 0,
+            imageCount: 0,
+            listItemCount: 0,
+            quoteCount: 0,
+            codeBlockCount: 0,
+            plainTextRatio: 0,
+            formattingRatio: 0
+        };
+    }
+
+    analyzeLine(line) {
+        const trimmed = line.trim();
+        
+        // Count words
+        const words = trimmed.replace(/[#*`>\-\[\]()]/g, '').trim();
+        if (words) {
+            this.stats.wordCount += words.split(/\s+/).filter(word => word.length > 0).length;
+        }
+        
+        // Count headings
+        const headingMatch = trimmed.match(/^(#{1,6})\s/);
+        if (headingMatch) {
+            const level = headingMatch[1].length;
+            this.stats.headingLevels[`h${level}`]++;
+        }
+        
+        // Count list items
+        if (trimmed.match(/^[-*+]\s/) || trimmed.match(/^\d+\.\s/)) {
+            this.stats.listItemCount++;
+        }
+        
+        // Count quotes
+        if (trimmed.startsWith('>')) {
+            this.stats.quoteCount++;
+        }
+        
+        // Count code blocks
+        if (trimmed.startsWith('```')) {
+            this.stats.codeBlockCount++;
+        }
+        
+        // Count links and images
+        const linkMatches = trimmed.match(/\[([^\]]*)\]\([^)]*\)/g) || [];
+        const imageMatches = trimmed.match(/!\[([^\]]*)\]\([^)]*\)/g) || [];
+        
+        this.stats.linkCount += linkMatches.length;
+        this.stats.imageCount += imageMatches.length;
+    }
+
+    countFormattingCharacters(line) {
+        // Count markdown formatting characters
+        const formattingRegex = /[#*`>\-_~\[\]()]/g;
+        const matches = line.match(formattingRegex) || [];
+        return matches.length;
+    }
+
+    countParagraphs(content) {
+        // Split by double newlines and filter empty sections
+        const paragraphs = content.split(/\n\s*\n/).filter(p => p.trim() !== '');
+        return paragraphs.length;
+    }
+
+    generateReport(filename = 'Unknown file', outputFormat = 'console') {
+        if (outputFormat === 'json') {
+            return JSON.stringify({
+                filename: filename,
+                analysis: this.stats,
+                timestamp: new Date().toISOString()
+            }, null, 2);
+        }
+        
+        // Console table format
+        const report = [];
+        report.push(colorize(`\n📊 Markdown Statistics Report`, 'cyan'));
+        report.push(colorize(`📄 File: ${filename}`, 'white'));
+        report.push(colorize('═'.repeat(60), 'white'));
+        
+        // Basic counts
+        report.push(colorize('\n📝 Content Statistics:', 'yellow'));
+        report.push(`   Words: ${colorize(this.stats.wordCount.toString(), 'green')}`);
+        report.push(`   Paragraphs: ${colorize(this.stats.paragraphCount.toString(), 'green')}`);
+        report.push(`   List Items: ${colorize(this.stats.listItemCount.toString(), 'green')}`);
+        report.push(`   Quotes: ${colorize(this.stats.quoteCount.toString(), 'green')}`);
+        
+        // Heading levels
+        report.push(colorize('\n🏷️  Heading Levels:', 'yellow'));
+        const totalHeadings = Object.values(this.stats.headingLevels).reduce((a, b) => a + b, 0);
+        for (let i = 1; i <= 6; i++) {
+            const count = this.stats.headingLevels[`h${i}`];
+            if (count > 0) {
+                report.push(`   H${i}: ${colorize(count.toString(), 'green')} ${'#'.repeat(i)}`);
+            }
+        }
+        report.push(`   Total Headings: ${colorize(totalHeadings.toString(), 'green')}`);
+        
+        // Media and links
+        report.push(colorize('\n🔗 Links & Media:', 'yellow'));
+        report.push(`   Links: ${colorize(this.stats.linkCount.toString(), 'green')}`);
+        report.push(`   Images: ${colorize(this.stats.imageCount.toString(), 'green')}`);
+        report.push(`   Code Blocks: ${colorize(this.stats.codeBlockCount.toString(), 'green')}`);
+        
+        // Formatting ratio
+        report.push(colorize('\n📈 Content Analysis:', 'yellow'));
+        report.push(`   Plain Text: ${colorize(this.stats.plainTextRatio + '%', 'green')}`);
+        report.push(`   Formatting: ${colorize(this.stats.formattingRatio + '%', 'blue')}`);
+        
+        // Quality metrics
+        report.push(colorize('\n🎯 Quality Metrics:', 'yellow'));
+        const avgWordsPerParagraph = this.stats.paragraphCount > 0 ? 
+            (this.stats.wordCount / this.stats.paragraphCount).toFixed(1) : '0';
+        report.push(`   Avg Words/Paragraph: ${colorize(avgWordsPerParagraph, 'green')}`);
+        
+        const headingDensity = this.stats.wordCount > 0 ? 
+            (totalHeadings / this.stats.wordCount * 100).toFixed(1) : '0';
+        report.push(`   Heading Density: ${colorize(headingDensity + '%', 'green')}`);
+        
+        report.push(colorize('═'.repeat(60), 'white'));
+        report.push(colorize(`📅 Generated: ${new Date().toLocaleString()}`, 'white'));
+        
+        return report.join('\n');
+    }
+}
+
 class MarkdownCLIWriter {
     constructor() {
         this.rl = readline.createInterface({
@@ -63,6 +230,7 @@ class MarkdownCLIWriter {
         console.log('3. 📂 Load from file');
         console.log('4. 🎯 Example mode');
         console.log('5. 📖 Show syntax guide (/guide)');
+        console.log('6. 📊 Analyze Markdown file (Statistics)');
         console.log('0. ❌ Exit');
         console.log(colorize('═'.repeat(50), 'white'));
         console.log();
@@ -317,7 +485,7 @@ class MarkdownCLIWriter {
         while (true) {
             this.showMainMenu();
             
-            const choice = await this.questionWithGuide(colorize('請選擇選項 (0-5): ', 'cyan'));
+            const choice = await this.questionWithGuide(colorize('請選擇選項 (0-6): ', 'cyan'));
             
             // 檢查特殊命令
             if (choice === '5') {
@@ -342,12 +510,15 @@ class MarkdownCLIWriter {
                 case '4':
                     await this.runExample();
                     break;
+                case '6':
+                    await this.handleStatisticsAnalysis();
+                    break;
                 case '0':
                     console.log(colorize('\n👋 感謝使用 Markdown CLI Writer！', 'cyan'));
                     this.rl.close();
                     return;
                 default:
-                    console.log(colorize('❌ 無效的選項，請選擇 0-5', 'red'));
+                    console.log(colorize('❌ 無效的選項，請選擇 0-6', 'red'));
                     await this.question(colorize('按 Enter 鍵繼續...', 'yellow'));
                     console.clear();
                     this.showWelcome();
@@ -455,6 +626,55 @@ Quote(Perfect for quick documentation!)`;
         await this.processInput(example);
     }
 
+    // 處理統計分析
+    async handleStatisticsAnalysis() {
+        console.clear();
+        console.log(colorize('📊 Markdown Statistics Analyzer', 'cyan'));
+        console.log(colorize('─'.repeat(50), 'white'));
+        console.log('Analyze existing Markdown files for detailed statistics');
+        console.log();
+        
+        const filepath = await this.question('Enter Markdown file path (.md): ');
+        
+        try {
+            const content = await fs.readFile(filepath, 'utf8');
+            console.log(colorize(`✅ File loaded: ${filepath}`, 'green'));
+            console.log(colorize(`📏 File size: ${content.length} characters`, 'white'));
+            
+            // Analyze the markdown
+            const analyzer = new MarkdownAnalyzer();
+            const stats = analyzer.analyzeMarkdown(content);
+            
+            // Ask for output format
+            const format = await this.question('Output format: (1) Console (2) JSON (3) Both: ');
+            
+            let filename = path.basename(filepath);
+            
+            if (format === '2' || format === '3') {
+                // JSON format
+                const jsonReport = analyzer.generateReport(filename, 'json');
+                const outputFile = filepath.replace(/\.md$/, '_stats.json');
+                
+                try {
+                    await fs.writeFile(outputFile, jsonReport, 'utf8');
+                    console.log(colorize(`📊 JSON report saved: ${outputFile}`, 'green'));
+                } catch (error) {
+                    console.log(colorize(`❌ Error saving JSON report: ${error.message}`, 'red'));
+                }
+            }
+            
+            if (format === '1' || format === '3' || format === '') {
+                // Console format (default)
+                const consoleReport = analyzer.generateReport(filename, 'console');
+                console.log(consoleReport);
+            }
+            
+        } catch (error) {
+            console.log(colorize(`❌ Error reading file: ${error.message}`, 'red'));
+            console.log(colorize('💡 Make sure the file exists and is a readable Markdown file', 'yellow'));
+        }
+    }
+
     // 處理輸入並生成 Markdown
     async processInput(input) {
         if (!input.trim()) {
@@ -496,10 +716,51 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
-// 執行應用程式
-if (require.main === module) {
-    const app = new MarkdownCLIWriter();
-    app.run();
+// Command line stats function
+async function runStatsCommand(filepath, outputFormat = 'console') {
+    try {
+        const content = await fs.readFile(filepath, 'utf8');
+        const analyzer = new MarkdownAnalyzer();
+        const stats = analyzer.analyzeMarkdown(content);
+        const filename = path.basename(filepath);
+        
+        if (outputFormat === 'json') {
+            const jsonReport = analyzer.generateReport(filename, 'json');
+            console.log(jsonReport);
+        } else {
+            const consoleReport = analyzer.generateReport(filename, 'console');
+            console.log(consoleReport);
+        }
+        
+        return stats;
+    } catch (error) {
+        console.log(colorize(`❌ Error analyzing file: ${error.message}`, 'red'));
+        process.exit(1);
+    }
 }
 
-module.exports = MarkdownCLIWriter;
+// 執行應用程式
+if (require.main === module) {
+    const args = process.argv.slice(2);
+    
+    // Check for stats command: node md-cli-simple.js stats file.md [json]
+    if (args[0] === 'stats' && args[1]) {
+        const filepath = args[1];
+        const format = args[2] === 'json' ? 'json' : 'console';
+        runStatsCommand(filepath, format);
+    } else if (args.length > 0) {
+        console.log(colorize('📋 Usage:', 'cyan'));
+        console.log('  Interactive mode: node md-cli-simple.js');
+        console.log('  Stats analysis:   node md-cli-simple.js stats <file.md> [json]');
+        console.log();
+        console.log(colorize('Examples:', 'yellow'));
+        console.log('  node md-cli-simple.js stats README.md');
+        console.log('  node md-cli-simple.js stats docs/guide.md json');
+    } else {
+        // Interactive mode
+        const app = new MarkdownCLIWriter();
+        app.run();
+    }
+}
+
+module.exports = { MarkdownCLIWriter, MarkdownAnalyzer };

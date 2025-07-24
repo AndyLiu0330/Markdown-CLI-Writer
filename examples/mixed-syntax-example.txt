@@ -1,0 +1,27 @@
+AAA(Example Project Documentation)
+BBB(Introduction)
+DDD(This project demonstrates mixed syntax support)
+DDD(Both current and PRD syntax styles work)
+EEE(Perfect for quick documentation!)
+
+Title2(Getting Started)
+Title3(Installation)
+List(Clone the repository)
+List(Run npm install)
+List(Start the CLI tool)
+
+BBB(Features)
+DDD(Dual syntax support)
+DDD(Interactive CLI)
+DDD(File processing)
+Quote(Both old and new syntax styles supported)
+
+CCC(Advanced Usage)
+DDD(Mix both syntax styles freely)
+List(Use AAA/BBB/CCC for PRD style)
+List(Use Title1/Title2/Title3 for current style)
+EEE(Backward compatibility guaranteed!)
+
+Title2(Conclusion)
+Quote(This tool makes Markdown generation easy and flexible)
+EEE(Happy documenting!)

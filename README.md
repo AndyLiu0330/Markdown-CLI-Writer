@@ -109,6 +109,121 @@ EEE(Both syntaxes work together!)
 - ✅ **Error Handling**: Comprehensive validation and helpful error messages
 - ✅ **Cross-Platform**: Works on Windows, macOS, and Linux
 - ✅ **Comprehensive Testing**: Full test suite included
+- ✅ **Statistics Analysis**: Analyze existing Markdown files for detailed metrics
+- ✅ **Multiple Output Formats**: Console table and JSON export
+
+## 🏗️ Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/AndyLiu0330/NodeJsCLI.git
+
+# Navigate to the directory
+cd NodeJsCLI
+
+# Install dependencies (optional)
+npm install
+
+# Start using the tool
+npm start
+# OR run the simple version
+node md-cli-simple.js
+```
+
+## 📖 Usage Guide
+
+### Interactive Mode
+1. Run `npm start` or `node md-cli-simple.js`
+2. Choose from the main menu:
+   - **Single line input**: Enter one syntax command
+   - **Multi-line input**: Enter multiple lines, type "END" to finish
+   - **Load from file**: Process a text file with syntax commands
+   - **Example mode**: See demo content with different syntax styles
+   - **Syntax guide**: View comprehensive help
+
+### File Processing
+1. Create a text file with your syntax commands:
+```
+AAA(My Project)
+BBB(Overview)
+DDD(Feature 1)
+DDD(Feature 2)
+EEE(This is a quote)
+```
+
+2. Load it through the CLI or process directly:
+```bash
+node md-cli-simple.js
+# Choose option 3 and enter your file path
+```
+
+### Command Examples
+- `AAA(Main Title)` → `# Main Title`
+- `Title2(Section)` → `## Section`
+- `CCC(Subsection)` → `### Subsection`
+- `List(Item)` → `- Item`
+- `EEE(Quote)` → `> Quote`
+
+### Statistics Analysis
+Analyze existing Markdown files:
+```bash
+# Console output
+node md-cli-simple.js stats README.md
+
+# JSON output
+node md-cli-simple.js stats README.md json
+
+# Using npm script
+npm run stats README.md
+```
+
+**Statistics Include:**
+- Word count and paragraph count
+- Heading levels distribution (H1-H6)
+- Links and images count
+- List items and quotes count
+- Code blocks and formatting ratio
+- Content quality metrics
+
+## 🧪 Testing
+
+Run the test suite to verify everything works:
+
+```bash
+# Basic tests
+npm test
+
+# Comprehensive test suite
+node test-comprehensive.js
+
+# Test statistics feature
+node md-cli-simple.js stats ./examples/stats-test-sample.md
+```
+
+The comprehensive test suite validates:
+- ✅ Syntax parsing for both current and PRD formats
+- ✅ Multiline document processing
+- ✅ Mixed syntax support
+- ✅ Error handling and validation
+- ✅ Filename generation
+- ✅ File operations
+- ✅ Statistics analysis accuracy
+- ✅ Report generation in multiple formats
+
+## 📁 Project Structure
+
+```
+NodeJsCLI/
+├── md-cli.js              # Main CLI with dependency support
+├── md-cli-simple.js       # Simple version (reliable)
+├── test-comprehensive.js  # Full test suite
+├── task.md               # Development task list
+├── prd.md                # Product requirements
+├── README.md             # This file
+├── package.json          # Dependencies and scripts
+├── .env.example          # Configuration template
+└── examples/             # Example files
+```
 - ✅ **Error Handling**: Clear validation and error messages
 - ✅ **Cross-platform**: Works on Windows, macOS, and Linux
 

@@ -7,10 +7,13 @@
     "md-cli": "./md-cli.js"
   },
   "scripts": {
-    "start": "node md-cli.js",
-    "dev": "node --watch md-cli.js",
+    "start": "node md-cli-simple.js",
+    "start-full": "node md-cli.js",
+    "dev": "node --watch md-cli-simple.js",
     "test": "node test-simple.js",
+    "test-comprehensive": "node test-comprehensive.js",
     "demo": "node demo.js",
+    "stats": "node md-cli-simple.js stats",
     "show-menu": "node test-cli-menu.js",
     "test-guide": "node test-guide-functionality.js"
   },
@@ -20,7 +23,8 @@
   "dependencies": {
     "inquirer": "^8.2.6",
     "chalk": "^4.1.2",
-    "commander": "^11.0.0"
+    "commander": "^11.0.0",
+    "dotenv": "^16.0.0"
   },
   "engines": {
     "node": ">=14.0.0"

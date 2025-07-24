@@ -1,0 +1,25 @@
+Title1(Current Syntax Example)
+Title2(Enhanced Features)
+List(Interactive CLI menu)
+List(Multiple input methods)
+List(File processing capabilities)
+List(Syntax highlighting)
+
+Title2(How to Use)
+Title3(Single Line Mode)
+List(Enter one command at a time)
+List(See immediate results)
+
+Title3(Multi-line Mode)
+List(Enter multiple commands)
+List(Type END to finish)
+
+Title2(File Processing)
+List(Load syntax from text files)
+List(Batch process multiple commands)
+Quote(Perfect for large documents!)
+
+Title2(Help System)
+List(Type /guide anytime for help)
+List(Interactive syntax reference)
+Quote(User-friendly design for everyone!)
