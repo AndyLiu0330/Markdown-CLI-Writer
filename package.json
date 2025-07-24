@@ -11,7 +11,8 @@
     "dev": "node --watch md-cli.js",
     "test": "node test-simple.js",
     "demo": "node demo.js",
-    "show-menu": "node test-cli-menu.js"
+    "show-menu": "node test-cli-menu.js",
+    "test-guide": "node test-guide-functionality.js"
   },
   "keywords": ["cli", "markdown", "generator", "nodejs", "converter"],
   "author": "AndyLiu0330",

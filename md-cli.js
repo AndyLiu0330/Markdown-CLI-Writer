@@ -218,6 +218,35 @@ class MarkdownCLIWriter {
     // 提問函數
     async question(prompt) {
         return new Promise((resolve) => {
+            this.rl.question(prompt, resolve);
+        });
+    }
+
+    // 主選單專用的提問函數，支援 /guide 命令
+    async questionWithGuide(prompt) {
+        return new Promise((resolve) => {
+            this.rl.question(prompt, (answer) => {
+                // 檢查特殊命令
+                if (answer.toLowerCase() === '/guide') {
+                    console.clear();
+                    this.showSyntaxGuide();
+                    console.log(colorize('\n按 Enter 鍵回到主選單...', 'yellow'));
+                    this.rl.question('', () => {
+                        console.clear();
+                        this.showWelcome();
+                        this.showMainMenu();
+                        resolve(this.questionWithGuide(prompt));
+                    });
+                } else {
+                    resolve(answer);
+                }
+            });
+        });
+    }
+
+    // 輸入模式專用的提問函數，支援 /guide 命令
+    async questionWithGuideInMode(prompt) {
+        return new Promise((resolve) => {
             this.rl.question(prompt, (answer) => {
                 // 檢查特殊命令
                 if (answer.toLowerCase() === '/guide') {
@@ -225,7 +254,8 @@ class MarkdownCLIWriter {
                     this.showSyntaxGuide();
                     console.log(colorize('\n按 Enter 鍵繼續...', 'yellow'));
                     this.rl.question('', () => {
-                        resolve(this.question(prompt));
+                        console.log();
+                        resolve(this.questionWithGuideInMode(prompt));
                     });
                 } else {
                     resolve(answer);
@@ -259,10 +289,11 @@ class MarkdownCLIWriter {
         while (true) {
             this.showMainMenu();
             
-            const choice = await this.question(colorize('請選擇選項 (0-5): ', 'cyan'));
+            const choice = await this.questionWithGuide(colorize('請選擇選項 (0-5): ', 'cyan'));
             
             // 檢查特殊命令
-            if (choice.toLowerCase() === '/guide' || choice === '5') {
+            if (choice === '5') {
+                console.clear();
                 this.showSyntaxGuide();
                 await this.question(colorize('\n按 Enter 鍵回到主選單...', 'yellow'));
                 console.clear();
@@ -309,9 +340,10 @@ class MarkdownCLIWriter {
         console.log(colorize('─'.repeat(40), 'white'));
         console.log('Format: PREFIX(content)');
         console.log('Example: Title1(My Title)');
+        console.log('Type /guide for syntax help');
         console.log();
         
-        const input = await this.question('Enter your syntax: ');
+        const input = await this.questionWithGuideInMode('Enter your syntax: ');
         await this.processInput(input);
     }
 
@@ -321,11 +353,12 @@ class MarkdownCLIWriter {
         console.log(colorize('📄 Multi-Line Input Mode', 'cyan'));
         console.log(colorize('─'.repeat(40), 'white'));
         console.log('Enter multiple lines. Type "END" to finish.');
+        console.log('Type /guide for syntax help');
         console.log();
         
         const lines = [];
         while (true) {
-            const line = await this.question('> ');
+            const line = await this.questionWithGuideInMode('> ');
             if (line.toUpperCase() === 'END') break;
             lines.push(line);
         }
