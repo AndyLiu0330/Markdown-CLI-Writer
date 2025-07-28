@@ -8,6 +8,7 @@
 - `test-comprehensive.js` - 全面功能測試
 - `test-guide-functionality.js` - 指南功能測試
 - `test-cli-menu.js` - CLI 選單測試
+- `test-gemini-menu.js` - Gemini 風格選單測試
 - `test.js` - 通用測試
 
 ## 運行測試
@@ -29,6 +30,9 @@ npm run show-menu
 
 # 運行所有測試
 npm run test-all
+
+# 運行 Gemini 選單測試
+npm run test-gemini
 ```
 
 ## 測試結果

@@ -5,17 +5,33 @@ A Node.js CLI tool that converts custom syntax to Markdown format quickly and ef
 ## 🚀 Quick Start
 
 ```bash
-# Run the CLI tool (main version)
+# Run with enhanced interactive menu (recommended)
 npm start
 
 # Run the simple/reliable version
-node md-cli-simple.js
+npm run start-simple
 
 # Run tests
 npm test
 
 # Run comprehensive tests
 node test-comprehensive.js
+```
+
+## 🎯 Enhanced Features
+
+### Interactive Menu System
+Experience our modern, user-friendly interface with:
+- 🎨 **Visual enhancements** with emojis and colors
+- ⌨️ **Keyboard navigation** with arrow keys
+- 💾 **Smart configuration** that remembers your preferences
+- 🔄 **Graceful fallback** to simple menu when needed
+- 📊 **Statistics analysis** for existing Markdown files
+
+```bash
+npm start              # Launch enhanced menu
+npm run start-simple   # Launch simple menu
+npm run test-stats     # Test statistics functionality
 ```
 
 ## 📝 Supported Syntax
