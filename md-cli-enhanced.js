@@ -900,7 +900,83 @@ EEE(PRD quote)`
         console.log(styled('📊 Markdown Statistics Analysis', { color: 'cyan', bold: true }));
         console.log(styled('─'.repeat(50), { color: 'white' }));
         
-        const filepath = await this.question('Enter path to Markdown file: ');
+        // Find all .md files in the current directory
+        let mdFiles = [];
+        try {
+            const files = await fs.readdir(process.cwd());
+            mdFiles = files.filter(file => file.endsWith('.md'));
+        } catch (error) {
+            console.log(styled('⚠️  Could not scan directory for .md files', { color: 'yellow' }));
+        }
+        
+        let filepath = '';
+        
+        // If .md files found, show them as options
+        if (mdFiles.length > 0) {
+            console.log(styled('\n📁 Available .md files in current directory:', { color: 'blue', bold: true }));
+            mdFiles.forEach((file, index) => {
+                console.log(styled(`   ${index + 1}. ${file}`, { color: 'white' }));
+            });
+            console.log(styled(`   ${mdFiles.length + 1}. Enter custom file path`, { color: 'white' }));
+            console.log('');
+            
+            if (inquirer) {
+                try {
+                    const answer = await inquirer.prompt([
+                        {
+                            type: 'list',
+                            name: 'fileChoice',
+                            message: 'Select a file to analyze:',
+                            choices: [
+                                ...mdFiles.map((file, index) => ({
+                                    name: `📄 ${file}`,
+                                    value: file
+                                })),
+                                {
+                                    name: '📝 Enter custom file path',
+                                    value: 'custom'
+                                }
+                            ]
+                        }
+                    ]);
+                    
+                    if (answer.fileChoice === 'custom') {
+                        const customPath = await inquirer.prompt([
+                            {
+                                type: 'input',
+                                name: 'path',
+                                message: 'Enter path to Markdown file:'
+                            }
+                        ]);
+                        filepath = customPath.path;
+                    } else {
+                        filepath = answer.fileChoice;
+                    }
+                } catch (inquirerError) {
+                    console.log(styled('📝 Using fallback selection...', { color: 'yellow' }));
+                    const choice = await this.question(`Select file (1-${mdFiles.length + 1}): `);
+                    const choiceNum = parseInt(choice) - 1;
+                    
+                    if (choiceNum >= 0 && choiceNum < mdFiles.length) {
+                        filepath = mdFiles[choiceNum];
+                    } else {
+                        filepath = await this.question('Enter path to Markdown file: ');
+                    }
+                }
+            } else {
+                const choice = await this.question(`Select file (1-${mdFiles.length + 1}): `);
+                const choiceNum = parseInt(choice) - 1;
+                
+                if (choiceNum >= 0 && choiceNum < mdFiles.length) {
+                    filepath = mdFiles[choiceNum];
+                } else {
+                    filepath = await this.question('Enter path to Markdown file: ');
+                }
+            }
+        } else {
+            console.log(styled('📝 No .md files found in current directory.', { color: 'yellow' }));
+            filepath = await this.question('Enter path to Markdown file: ');
+        }
         
         try {
             const content = await fs.readFile(filepath, 'utf8');
@@ -908,7 +984,7 @@ EEE(PRD quote)`
             const stats = analyzer.analyzeFile(content);
             const filename = path.basename(filepath);
             
-            console.log(analyzer.generateReport('console'));
+            console.log('\n' + analyzer.generateReport('console'));
             
             if (inquirer) {
                 try {
@@ -949,6 +1025,9 @@ EEE(PRD quote)`
             
         } catch (error) {
             console.log(styled(`❌ Error analyzing file: ${error.message}`, { color: 'red' }));
+            if (error.code === 'ENOENT') {
+                console.log(styled('💡 Make sure the file path is correct and the file exists.', { color: 'yellow' }));
+            }
         }
     }
 
