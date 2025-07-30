@@ -1,6 +1,6 @@
 {
   "lastUsedMenuItem": "stats",
   "defaultOutputDir": "./",
-  "preferredSyntax": "current",
-  "showWelcomeMessage": true
+  "preferredSyntax": "mixed",
+  "showWelcomeMessage": false
 }

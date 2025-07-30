@@ -86,7 +86,7 @@ class ConfigManager {
     }
 }
 
-// Markdown Statistics Analyzer (same as before)
+// Markdown Statistics Analyzer
 class MarkdownAnalyzer {
     constructor() {
         this.stats = {
@@ -98,92 +98,106 @@ class MarkdownAnalyzer {
             listItemCount: 0,
             quoteCount: 0,
             codeBlockCount: 0,
-            tableCount: 0,
-            boldTextCount: 0,
-            italicTextCount: 0,
-            totalLines: 0,
-            emptyLines: 0
+            plainTextRatio: 0,
+            formattingRatio: 0
         };
     }
 
-    analyzeFile(markdownContent) {
-        const lines = markdownContent.split('\n');
-        this.stats.totalLines = lines.length;
+    analyzeFile(content) {
+        this.resetStats();
+        const lines = content.split('\n').filter(line => line.trim() !== '');
+        
+        let totalCharacters = content.length;
+        let formattingCharacters = 0;
         
         for (const line of lines) {
-            if (line.trim() === '') {
-                this.stats.emptyLines++;
-                continue;
-            }
-            
-            // Count words
-            const words = line.trim().split(/\s+/).filter(word => word.length > 0);
-            this.stats.wordCount += words.length;
-            
-            // Count headings
-            const headingMatch = line.match(/^(#{1,6})\s+/);
-            if (headingMatch) {
-                const level = headingMatch[1].length;
-                this.stats.headingLevels[`h${level}`]++;
-            }
-            
-            // Count list items
-            if (line.match(/^\s*[-*+]\s+/) || line.match(/^\s*\d+\.\s+/)) {
-                this.stats.listItemCount++;
-            }
-            
-            // Count quotes
-            if (line.match(/^\s*>/)) {
-                this.stats.quoteCount++;
-            }
-            
-            // Count links
-            const linkMatches = line.match(/\[([^\]]+)\]\([^)]+\)/g);
-            if (linkMatches) {
-                this.stats.linkCount += linkMatches.length;
-            }
-            
-            // Count images
-            const imageMatches = line.match(/!\[([^\]]*)\]\([^)]+\)/g);
-            if (imageMatches) {
-                this.stats.imageCount += imageMatches.length;
-            }
-            
-            // Count code blocks
-            if (line.match(/^```/)) {
-                this.stats.codeBlockCount++;
-            }
-            
-            // Count bold text
-            const boldMatches = line.match(/\*\*[^*]+\*\*/g);
-            if (boldMatches) {
-                this.stats.boldTextCount += boldMatches.length;
-            }
-            
-            // Count italic text
-            const italicMatches = line.match(/\*[^*]+\*/g);
-            if (italicMatches) {
-                this.stats.italicTextCount += italicMatches.length;
-            }
+            this.analyzeLine(line);
+            formattingCharacters += this.countFormattingCharacters(line);
         }
         
-        // Count paragraphs (groups of non-empty lines)
-        let inParagraph = false;
-        for (const line of lines) {
-            if (line.trim() === '') {
-                inParagraph = false;
-            } else if (!inParagraph && !line.match(/^#|^\s*[-*+]|^\s*\d+\.|^\s*>/)) {
-                this.stats.paragraphCount++;
-                inParagraph = true;
-            }
-        }
+        // Calculate paragraphs (groups of non-empty lines)
+        this.stats.paragraphCount = this.countParagraphs(content);
+        
+        // Calculate ratios
+        this.stats.plainTextRatio = ((totalCharacters - formattingCharacters) / totalCharacters * 100).toFixed(1);
+        this.stats.formattingRatio = (formattingCharacters / totalCharacters * 100).toFixed(1);
         
         return this.stats;
     }
 
+    resetStats() {
+        this.stats = {
+            wordCount: 0,
+            paragraphCount: 0,
+            headingLevels: { h1: 0, h2: 0, h3: 0, h4: 0, h5: 0, h6: 0 },
+            linkCount: 0,
+            imageCount: 0,
+            listItemCount: 0,
+            quoteCount: 0,
+            codeBlockCount: 0,
+            plainTextRatio: 0,
+            formattingRatio: 0
+        };
+    }
+
+    analyzeLine(line) {
+        const trimmed = line.trim();
+        
+        // Count words
+        const words = trimmed.replace(/[#*`>\-\[\]()]/g, '').trim();
+        if (words) {
+            this.stats.wordCount += words.split(/\s+/).filter(word => word.length > 0).length;
+        }
+        
+        // Count headings
+        const headingMatch = trimmed.match(/^(#{1,6})\s/);
+        if (headingMatch) {
+            const level = headingMatch[1].length;
+            this.stats.headingLevels[`h${level}`]++;
+        }
+        
+        // Count list items
+        if (trimmed.match(/^[-*+]\s/) || trimmed.match(/^\d+\.\s/)) {
+            this.stats.listItemCount++;
+        }
+        
+        // Count quotes
+        if (trimmed.startsWith('>')) {
+            this.stats.quoteCount++;
+        }
+        
+        // Count code blocks
+        if (trimmed.startsWith('```')) {
+            this.stats.codeBlockCount++;
+        }
+        
+        // Count links and images
+        const linkMatches = trimmed.match(/\[([^\]]*)\]\([^)]*\)/g) || [];
+        const imageMatches = trimmed.match(/!\[([^\]]*)\]\([^)]*\)/g) || [];
+        
+        this.stats.linkCount += linkMatches.length;
+        this.stats.imageCount += imageMatches.length;
+    }
+
+    countFormattingCharacters(line) {
+        // Count markdown formatting characters
+        const formattingRegex = /[#*`>\-_~\[\]()]/g;
+        const matches = line.match(formattingRegex) || [];
+        return matches.length;
+    }
+
+    countParagraphs(content) {
+        // Split by double newlines and filter empty sections
+        const paragraphs = content.split(/\n\s*\n/).filter(p => p.trim() !== '');
+        return paragraphs.length;
+    }
+
     generateReport(format = 'console') {
         if (format === 'json') {
-            return JSON.stringify(this.stats, null, 2);
+            return JSON.stringify({
+                analysis: this.stats,
+                timestamp: new Date().toISOString()
+            }, null, 2);
         }
         
         const report = [];
@@ -193,28 +207,35 @@ class MarkdownAnalyzer {
         
         report.push(styled('📝 Content Overview:', { color: 'yellow', bold: true }));
         report.push(`   Word Count: ${styled(this.stats.wordCount.toString(), { color: 'green' })}`);
-        report.push(`   Total Lines: ${styled(this.stats.totalLines.toString(), { color: 'green' })}`);
         report.push(`   Paragraphs: ${styled(this.stats.paragraphCount.toString(), { color: 'green' })}`);
-        report.push(`   Empty Lines: ${styled(this.stats.emptyLines.toString(), { color: 'green' })}`);
+        report.push(`   List Items: ${styled(this.stats.listItemCount.toString(), { color: 'green' })}`);
+        report.push(`   Quote Lines: ${styled(this.stats.quoteCount.toString(), { color: 'green' })}`);
         report.push('');
         
         report.push(styled('📋 Structure Analysis:', { color: 'blue', bold: true }));
-        report.push(`   H1 Headings: ${styled(this.stats.headingLevels.h1.toString(), { color: 'green' })}`);
-        report.push(`   H2 Headings: ${styled(this.stats.headingLevels.h2.toString(), { color: 'green' })}`);
-        report.push(`   H3 Headings: ${styled(this.stats.headingLevels.h3.toString(), { color: 'green' })}`);
-        report.push(`   List Items: ${styled(this.stats.listItemCount.toString(), { color: 'green' })}`);
-        report.push(`   Quote Lines: ${styled(this.stats.quoteCount.toString(), { color: 'green' })}`);
+        const totalHeadings = Object.values(this.stats.headingLevels).reduce((a, b) => a + b, 0);
+        for (let i = 1; i <= 6; i++) {
+            const count = this.stats.headingLevels[`h${i}`];
+            if (count > 0) {
+                report.push(`   H${i} Headings: ${styled(count.toString(), { color: 'green' })}`);
+            }
+        }
+        report.push(`   Total Headings: ${styled(totalHeadings.toString(), { color: 'green' })}`);
         report.push('');
         
         report.push(styled('🔗 Links & Media:', { color: 'magenta', bold: true }));
         report.push(`   Links: ${styled(this.stats.linkCount.toString(), { color: 'green' })}`);
         report.push(`   Images: ${styled(this.stats.imageCount.toString(), { color: 'green' })}`);
+        report.push(`   Code Blocks: ${styled(this.stats.codeBlockCount.toString(), { color: 'green' })}`);
         report.push('');
         
-        report.push(styled('💻 Code & Formatting:', { color: 'cyan', bold: true }));
-        report.push(`   Code Blocks: ${styled(this.stats.codeBlockCount.toString(), { color: 'green' })}`);
-        report.push(`   Bold Text: ${styled(this.stats.boldTextCount.toString(), { color: 'green' })}`);
-        report.push(`   Italic Text: ${styled(this.stats.italicTextCount.toString(), { color: 'green' })}`);
+        report.push(styled('� Content Analysis:', { color: 'cyan', bold: true }));
+        report.push(`   Plain Text: ${styled(this.stats.plainTextRatio + '%', { color: 'green' })}`);
+        report.push(`   Formatting: ${styled(this.stats.formattingRatio + '%', { color: 'blue' })}`);
+        
+        const avgWordsPerParagraph = this.stats.paragraphCount > 0 ? 
+            (this.stats.wordCount / this.stats.paragraphCount).toFixed(1) : '0';
+        report.push(`   Avg Words/Paragraph: ${styled(avgWordsPerParagraph, { color: 'green' })}`);
         
         return report.join('\n');
     }
@@ -890,16 +911,35 @@ EEE(PRD quote)`
             console.log(analyzer.generateReport('console'));
             
             if (inquirer) {
-                const answer = await inquirer.prompt([
-                    {
-                        type: 'confirm',
-                        name: 'saveJson',
-                        message: 'Save statistics as JSON file?',
-                        default: false
+                try {
+                    const answer = await inquirer.prompt([
+                        {
+                            type: 'confirm',
+                            name: 'saveJson',
+                            message: 'Save statistics as JSON file?',
+                            default: false
+                        }
+                    ]);
+                    
+                    if (answer.saveJson) {
+                        const jsonReport = analyzer.generateReport('json');
+                        const jsonFilename = `${filename.replace('.md', '')}-stats.json`;
+                        await fs.writeFile(jsonFilename, jsonReport, 'utf8');
+                        console.log(styled(`✅ JSON report saved: ${jsonFilename}`, { color: 'green' }));
                     }
-                ]);
-                
-                if (answer.saveJson) {
+                } catch (inquirerError) {
+                    console.log(styled('📝 Inquirer prompt failed, using fallback...', { color: 'yellow' }));
+                    const saveJson = await this.question('Save statistics as JSON file? (y/N): ');
+                    if (saveJson.toLowerCase().startsWith('y')) {
+                        const jsonReport = analyzer.generateReport('json');
+                        const jsonFilename = `${filename.replace('.md', '')}-stats.json`;
+                        await fs.writeFile(jsonFilename, jsonReport, 'utf8');
+                        console.log(styled(`✅ JSON report saved: ${jsonFilename}`, { color: 'green' }));
+                    }
+                }
+            } else {
+                const saveJson = await this.question('Save statistics as JSON file? (y/N): ');
+                if (saveJson.toLowerCase().startsWith('y')) {
                     const jsonReport = analyzer.generateReport('json');
                     const jsonFilename = `${filename.replace('.md', '')}-stats.json`;
                     await fs.writeFile(jsonFilename, jsonReport, 'utf8');

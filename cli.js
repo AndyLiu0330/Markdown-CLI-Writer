@@ -28,7 +28,7 @@ Examples:
 
 // If 'start' argument or no arguments, run the app
 if (args.includes('start') || args.length === 0) {
-    const { MarkdownCLIWriter } = require('./md-cli-enhanced.js');
+    const { MarkdownCLIWriter } = require('./md-cli-gemini.js');
     const app = new MarkdownCLIWriter();
     app.run().catch(error => {
         console.error('💥 Fatal error:', error);

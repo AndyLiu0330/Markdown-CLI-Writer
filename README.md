@@ -181,12 +181,17 @@ node md-cli-simple.js
 - `EEE(Quote)` → `> Quote`
 
 ### Statistics Analysis
-Analyze existing Markdown files:
+Analyze existing Markdown files using the enhanced interactive menu:
 ```bash
-# Console output
+# Launch enhanced menu and select statistics
+npm start
+# Use arrow keys to select "📊 View statistics report"
+# Press Enter and provide file path
+
+# Alternative: Direct command line (simple menu)
 node md-cli-simple.js stats README.md
 
-# JSON output
+# JSON output with simple menu
 node md-cli-simple.js stats README.md json
 
 # Using npm script
