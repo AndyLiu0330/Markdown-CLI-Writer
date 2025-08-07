@@ -164,6 +164,41 @@ This task list is derived from comparing the PRD requirements with the current i
   - ✅ Interactive mode option in main menu
   - ✅ Comprehensive test coverage
   - 📝 Future support: export to graphical chart output (e.g., Pie/Bar chart)
+  ### 🤖 AI Assistant Features (Free LLM Support)
+
+- [x] **`md-cli ai-suggest`**
+  - ✅ Analyze Markdown file and suggest better titles or summaries
+  - ✅ **Free**: Uses OpenRouter API (Mistral-7B or Mixtral) or local LLM (e.g., via Ollama)
+  - ✅ Command: `npm run ai-suggest file.md`
+  - ✅ Interactive menu integration: npm start → "🤖 AI Assistant"
+
+- [x] **`md-cli ai-grammar`**
+  - ✅ Fix grammar or awkward sentences using LLM
+  - ✅ **Free**: Uses OpenRouter API or local LLM
+  - ✅ Command: `npm run ai-grammar file.md`
+  - ✅ Saves corrected version as `file-corrected.md`
+
+- [x] **`md-cli ai-expand`**
+  - ✅ Expand headlines into example paragraphs or sections
+  - ✅ **Free**: Uses OpenRouter API or local LLM
+  - ✅ Command: `npm run ai-expand file.md`
+  - ✅ Saves expanded version as `file-expanded.md`
+
+- [x] **Configuration & Setup**
+  - ✅ `.env` file support to store **free OpenRouter API key**
+  - ✅ Support for **Ollama** for fully offline local models
+  - ✅ Support for **LM Studio** local LLM with GUI
+  - ✅ Command: `npm run ai-setup` for easy configuration
+  - ✅ Auto-creates `.env.example` and `.ai-config.json` templates
+
+- [x] **Enhanced Integration**
+  - ✅ Added "🤖 AI Assistant" option to main interactive menu
+  - ✅ Auto-detects available .md files in directory
+  - ✅ Interactive file selection with inquirer support
+  - ✅ Fallback CLI mode when inquirer unavailable
+  - ✅ Comprehensive error handling and user guidance
+  - ✅ Multiple AI provider support (OpenRouter, Ollama, LM Studio)
+
 
 - [ ] **Plugin system**
   - [ ] Custom syntax plugin support

@@ -282,6 +282,11 @@ class MarkdownCLIWriter {
                 description: 'Analyze Markdown file statistics and metrics'
             },
             {
+                name: '🤖 AI Assistant',
+                value: 'ai',
+                description: 'AI-powered content analysis and improvement'
+            },
+            {
                 name: '📖 Help / Guide',
                 value: 'help',
                 description: 'Show syntax guide and usage examples'
@@ -389,6 +394,9 @@ class MarkdownCLIWriter {
                 break;
             case 'stats':
                 await this.handleStatisticsAnalysis();
+                break;
+            case 'ai':
+                await this.handleAIAssistant();
                 break;
             case 'help':
                 await this.handleShowHelp();
@@ -1028,6 +1036,182 @@ EEE(PRD quote)`
             if (error.code === 'ENOENT') {
                 console.log(styled('💡 Make sure the file path is correct and the file exists.', { color: 'yellow' }));
             }
+        }
+    }
+
+    async handleAIAssistant() {
+        console.clear();
+        console.log(styled('🤖 AI Assistant - Enhanced Content Analysis', { color: 'cyan', bold: true }));
+        console.log(styled('─'.repeat(50), { color: 'white' }));
+        
+        // Find all .md files in the current directory
+        let mdFiles = [];
+        try {
+            const files = await fs.readdir(process.cwd());
+            mdFiles = files.filter(file => file.endsWith('.md'));
+        } catch (error) {
+            console.log(styled('⚠️  Could not scan directory for .md files', { color: 'yellow' }));
+        }
+        
+        let filepath = '';
+        let aiAction = '';
+        
+        // First, let user choose AI action
+        if (inquirer) {
+            try {
+                const actionAnswer = await inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'action',
+                        message: 'What would you like the AI to help with?',
+                        choices: [
+                            {
+                                name: '💡 Suggest improvements to content structure and titles',
+                                value: 'suggest'
+                            },
+                            {
+                                name: '📝 Fix grammar and improve writing style',
+                                value: 'grammar'
+                            },
+                            {
+                                name: '📚 Expand content with examples and details',
+                                value: 'expand'
+                            },
+                            {
+                                name: '⚙️  Setup AI configuration',
+                                value: 'setup'
+                            }
+                        ]
+                    }
+                ]);
+                aiAction = actionAnswer.action;
+            } catch (inquirerError) {
+                console.log(styled('📝 Using fallback selection...', { color: 'yellow' }));
+                console.log('AI Assistant Actions:');
+                console.log('  1. Suggest improvements');
+                console.log('  2. Fix grammar');
+                console.log('  3. Expand content');
+                console.log('  4. Setup configuration');
+                const actionChoice = await this.question('Select action (1-4): ');
+                const actions = ['suggest', 'grammar', 'expand', 'setup'];
+                aiAction = actions[parseInt(actionChoice) - 1] || 'suggest';
+            }
+        } else {
+            console.log('AI Assistant Actions:');
+            console.log('  1. Suggest improvements');
+            console.log('  2. Fix grammar');
+            console.log('  3. Expand content');
+            console.log('  4. Setup configuration');
+            const actionChoice = await this.question('Select action (1-4): ');
+            const actions = ['suggest', 'grammar', 'expand', 'setup'];
+            aiAction = actions[parseInt(actionChoice) - 1] || 'suggest';
+        }
+
+        // If setup action, handle it separately
+        if (aiAction === 'setup') {
+            try {
+                const AICLICommands = require('./ai-cli');
+                const aiCli = new AICLICommands();
+                await aiCli.setup();
+            } catch (error) {
+                console.log(styled('❌ Could not load AI CLI module', { color: 'red' }));
+                console.log(styled('💡 Make sure ai-cli.js is in the project directory', { color: 'yellow' }));
+            }
+            return;
+        }
+
+        // For other actions, let user choose file
+        if (mdFiles.length > 0) {
+            console.log(styled('\n📁 Available .md files in current directory:', { color: 'blue', bold: true }));
+            mdFiles.forEach((file, index) => {
+                console.log(styled(`   ${index + 1}. ${file}`, { color: 'white' }));
+            });
+            console.log(styled(`   ${mdFiles.length + 1}. Enter custom file path`, { color: 'white' }));
+            console.log('');
+            
+            if (inquirer) {
+                try {
+                    const answer = await inquirer.prompt([
+                        {
+                            type: 'list',
+                            name: 'fileChoice',
+                            message: 'Select a file to analyze:',
+                            choices: [
+                                ...mdFiles.map((file, index) => ({
+                                    name: `📄 ${file}`,
+                                    value: file
+                                })),
+                                {
+                                    name: '📝 Enter custom file path',
+                                    value: 'custom'
+                                }
+                            ]
+                        }
+                    ]);
+                    
+                    if (answer.fileChoice === 'custom') {
+                        const customPath = await inquirer.prompt([
+                            {
+                                type: 'input',
+                                name: 'path',
+                                message: 'Enter path to Markdown file:'
+                            }
+                        ]);
+                        filepath = customPath.path;
+                    } else {
+                        filepath = answer.fileChoice;
+                    }
+                } catch (inquirerError) {
+                    console.log(styled('📝 Using fallback selection...', { color: 'yellow' }));
+                    const choice = await this.question(`Select file (1-${mdFiles.length + 1}): `);
+                    const choiceNum = parseInt(choice) - 1;
+                    
+                    if (choiceNum >= 0 && choiceNum < mdFiles.length) {
+                        filepath = mdFiles[choiceNum];
+                    } else {
+                        filepath = await this.question('Enter path to Markdown file: ');
+                    }
+                }
+            } else {
+                const choice = await this.question(`Select file (1-${mdFiles.length + 1}): `);
+                const choiceNum = parseInt(choice) - 1;
+                
+                if (choiceNum >= 0 && choiceNum < mdFiles.length) {
+                    filepath = mdFiles[choiceNum];
+                } else {
+                    filepath = await this.question('Enter path to Markdown file: ');
+                }
+            }
+        } else {
+            console.log(styled('📝 No .md files found in current directory.', { color: 'yellow' }));
+            filepath = await this.question('Enter path to Markdown file: ');
+        }
+
+        // Execute AI command
+        try {
+            const AICLICommands = require('./ai-cli');
+            const aiCli = new AICLICommands();
+            
+            console.log(styled(`\n🤖 Running AI ${aiAction} on: ${filepath}`, { color: 'blue' }));
+            
+            switch (aiAction) {
+                case 'suggest':
+                    await aiCli.suggest(filepath);
+                    break;
+                case 'grammar':
+                    await aiCli.grammar(filepath);
+                    break;
+                case 'expand':
+                    await aiCli.expand(filepath);
+                    break;
+                default:
+                    console.log(styled('❌ Unknown AI action', { color: 'red' }));
+            }
+            
+        } catch (error) {
+            console.log(styled(`❌ AI processing failed: ${error.message}`, { color: 'red' }));
+            console.log(styled('💡 Make sure ai-cli.js and ai-assistant.js are in the project directory', { color: 'yellow' }));
+            console.log(styled('💡 Run the setup action to configure AI providers', { color: 'yellow' }));
         }
     }
 
