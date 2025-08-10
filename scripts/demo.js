@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // 快速示範 Markdown CLI Writer
-const MarkdownCLIWriter = require('./md-cli.js');
+const MarkdownCLIWriter = require('../bin/md-cli.js');
 
 console.log('🎬 Markdown CLI Writer Demo\n');
 

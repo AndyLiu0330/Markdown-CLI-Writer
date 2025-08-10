@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Test the enhanced menu system specifically
-const { MarkdownCLIWriter } = require('../md-cli-enhanced.js');
+const { MarkdownCLIWriter } = require('../bin/md-cli-enhanced.js');
 
 async function testEnhancedMenuSystem() {
     console.log('🎯 Testing Enhanced Menu System Features...');

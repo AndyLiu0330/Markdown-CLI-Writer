@@ -4,7 +4,7 @@ const args = process.argv.slice(2);
 
 // Handle CLI commands
 if (args.includes('--version') || args.includes('-v')) {
-    const packageJson = require('./package.json');
+    const packageJson = require('../package.json');
     console.log(`Markdown CLI Writer v${packageJson.version}`);
     process.exit(0);
 }

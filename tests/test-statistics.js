@@ -1,4 +1,4 @@
-const { MarkdownCLIWriter, MarkdownAnalyzer } = require('../md-cli-enhanced.js');
+const { MarkdownCLIWriter, MarkdownAnalyzer } = require('../bin/md-cli-enhanced.js');
 
 async function testStatistics() {
     console.log('🧪 Testing Markdown Statistics Analysis...\n');

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Comprehensive test suite for Markdown CLI Writer
-const { MarkdownCLIWriter, MarkdownAnalyzer } = require('../md-cli-simple.js');
+const { MarkdownCLIWriter, MarkdownAnalyzer } = require('../bin/md-cli-simple.js');
 
 function testSyntaxParsing() {
     console.log('🧪 Testing Syntax Parsing...');

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Dedicated test for statistics functionality in npm start
-const { MarkdownCLIWriter, MarkdownAnalyzer } = require('../md-cli-enhanced.js');
+const { MarkdownCLIWriter, MarkdownAnalyzer } = require('../bin/md-cli-enhanced.js');
 const fs = require('fs').promises;
 
 async function testStatisticsFunction() {

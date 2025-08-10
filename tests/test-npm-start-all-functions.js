@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Comprehensive test of all npm start menu functions
-const { MarkdownCLIWriter } = require('../md-cli-enhanced.js');
+const { MarkdownCLIWriter } = require('../bin/md-cli-enhanced.js');
 
 async function testAllMenuFunctions() {
     console.log('🔍 Testing ALL functions in npm start enhanced menu...');

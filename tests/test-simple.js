@@ -1,4 +1,4 @@
-const MarkdownCLIWriter = require('../md-cli.js');
+const MarkdownCLIWriter = require('../bin/md-cli.js');
 
 // 測試解析功能
 function testParser() {

@@ -1110,7 +1110,7 @@ EEE(PRD quote)`
         // If setup action, handle it separately
         if (aiAction === 'setup') {
             try {
-                const AICLICommands = require('./src/cli/ai-cli');
+                const AICLICommands = require('../src/cli/ai-cli');
                 const aiCli = new AICLICommands();
                 await aiCli.setup();
             } catch (error) {
@@ -1189,7 +1189,7 @@ EEE(PRD quote)`
 
         // Execute AI command
         try {
-            const AICLICommands = require('./src/cli/ai-cli');
+            const AICLICommands = require('../src/cli/ai-cli');
             const aiCli = new AICLICommands();
             
             console.log(styled(`\n🤖 Running AI ${aiAction} on: ${filepath}`, { color: 'blue' }));
@@ -1285,7 +1285,7 @@ if (require.main === module) {
     
     // Handle CLI commands
     if (args.includes('--version') || args.includes('-v')) {
-        const packageJson = require('./package.json');
+        const packageJson = require('../package.json');
         console.log(`Markdown CLI Writer v${packageJson.version}`);
         process.exit(0);
     }

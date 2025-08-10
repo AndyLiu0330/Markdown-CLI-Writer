@@ -1,5 +1,21 @@
 #!/usr/bin/env node
+/**
+ * 📝 Markdown CLI Writer - Main Entry Point
+ * Professional CLI tool for markdown generation and processing
+ */
 
+const path = require('path');
+
+// Main CLI modules
+const enhancedCLI = () => require('./bin/md-cli-enhanced');
+const simpleCLI = () => require('./bin/md-cli-simple');
+const basicCLI = () => require('./bin/md-cli');
+
+// AI modules
+const AIAssistant = require('./src/ai/ai-assistant');
+const AICLICommands = require('./src/cli/ai-cli');
+
+// Legacy MarkdownCLIWriter class for backward compatibility
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const fs = require('fs').promises;
@@ -347,4 +363,28 @@ if (require.main === module) {
     app.run();
 }
 
-module.exports = MarkdownCLIWriter;
+// Export main functionality and legacy class
+module.exports = {
+    // CLI interfaces
+    enhancedCLI,
+    simpleCLI,
+    basicCLI,
+    
+    // AI functionality
+    AIAssistant,
+    AICLICommands,
+    
+    // Legacy class
+    MarkdownCLIWriter,
+    
+    // Utility functions
+    version: () => {
+        const pkg = require('./package.json');
+        return pkg.version;
+    },
+    
+    // Main CLI entry point
+    run: () => {
+        require('./bin/md-cli-enhanced');
+    }
+};

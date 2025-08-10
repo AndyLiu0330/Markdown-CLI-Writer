@@ -361,8 +361,28 @@ Supported syntax:
 
 ## 📖 Documentation
 
-- [Detailed Usage Guide](USAGE.md) - Complete guide with examples
-- [Product Requirements](prd.md) - Original specification
+- [Detailed Usage Guide](docs/USAGE.md) - Complete guide with examples
+- [Project Structure](docs/PROJECT-STRUCTURE.md) - Organized codebase overview
+- [API Documentation](docs/API-DOCS.md) - Technical API reference
+- [Product Requirements](docs/prd.md) - Original specification
+
+## 📁 Project Structure
+
+The project follows a professional, organized structure:
+
+```
+📦 Markdown-CLI-Writer/
+├── 📁 bin/          # Executable CLI files
+├── 📁 config/       # Configuration files
+├── 📁 docs/         # Documentation
+├── 📁 scripts/      # Utility scripts
+├── 📁 src/          # Source code modules
+├── 📁 tests/        # Test suite
+├── 📄 index.js      # Main entry point
+└── 📄 package.json  # Project configuration
+```
+
+See [PROJECT-STRUCTURE.md](docs/PROJECT-STRUCTURE.md) for detailed information.
 
 ## 🎯 Use Cases
 

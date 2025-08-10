@@ -8,6 +8,9 @@
 const fs = require('fs');
 const path = require('path');
 
+// Change to project root directory
+process.chdir(path.join(__dirname, '..'));
+
 console.log('🏥 Markdown CLI Writer - Health Check');
 console.log('════════════════════════════════════════');
 
@@ -16,10 +19,11 @@ let allChecks = [];
 // Check 1: Core files exist
 console.log('📁 Checking core files...');
 const coreFiles = [
-    'md-cli-enhanced.js',
-    'md-cli-simple.js', 
+    'bin/md-cli-enhanced.js',
+    'bin/md-cli-simple.js', 
     'package.json',
-    'README.md'
+    'README.md',
+    'index.js'
 ];
 
 coreFiles.forEach(file => {
@@ -64,7 +68,7 @@ console.log(`   ${configExists ? '✅' : '📝'} Configuration file ${configExis
 
 // Check 5: Examples and documentation
 console.log('\n📚 Checking documentation...');
-const docFiles = ['README.md', 'USAGE.md', 'task.md'];
+const docFiles = ['README.md', 'docs/USAGE.md', 'docs/task.md'];
 docFiles.forEach(file => {
     const exists = fs.existsSync(file);
     console.log(`   ${exists ? '✅' : '❌'} ${file}`);
@@ -73,7 +77,7 @@ docFiles.forEach(file => {
 
 // Check 6: Sample files
 console.log('\n📄 Checking examples...');
-const exampleFiles = ['demo.js', 'examples/'];
+const exampleFiles = ['scripts/demo.js', 'examples/'];
 exampleFiles.forEach(file => {
     const exists = fs.existsSync(file);
     console.log(`   ${exists ? '✅' : '❌'} ${file}`);

@@ -1,4 +1,4 @@
-const { MarkdownCLIWriter } = require('../md-cli-enhanced.js');
+const { MarkdownCLIWriter } = require('../bin/md-cli-enhanced.js');
 
 async function testEnhancedMenu() {
     console.log('🧪 Testing Enhanced Interactive Menu...\n');
