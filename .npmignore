@@ -1,0 +1,42 @@
+# Exclude environment and AI config
+.env
+.env.*
+.ai-config.json
+
+# Exclude test files and outputs
+tests/
+test-*.js
+*.test.js
+demo.js
+demo-output.md
+test-*-output.md
+test-corrected.md
+test-expanded.md
+test-suggestions.md
+
+# Exclude internal scripts not essential for end-user runtime
+optimizer.js
+health-check.js
+docs-generator.js
+verify-ai-setup.js
+
+# Generated docs (optional to publish)
+README-ENHANCED.md
+API-DOCS.md
+CHANGELOG.md
+
+# Node / editor artifacts
+node_modules/
+npm-debug.log*
+yarn.lock
+package-lock.json
+.DS_Store
+.vscode/
+coverage/
+
+# Git metadata (npm ignores .git by default)
+.git/
+
+# Temporary
+*.tmp
+*.log

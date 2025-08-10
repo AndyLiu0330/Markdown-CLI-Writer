@@ -1,6 +1,6 @@
 {
   "name": "markdown-cli-writer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Node.js CLI tool that converts custom syntax to Markdown",
   "main": "md-cli-enhanced.js",
   "bin": {
@@ -32,10 +32,19 @@
     "ai-setup": "node ai-cli.js setup",
     "version": "node -e \"console.log('Markdown CLI Writer v' + require('./package.json').version)\"",
     "lint": "echo '✅ Code quality check passed'",
-    "build": "echo '📦 Project is ready for distribution'"
+  "build": "echo '📦 Project is ready for distribution'",
+  "prepublishOnly": "npm run test && npm run health"
   },
   "keywords": ["cli", "markdown", "generator", "nodejs", "converter"],
   "author": "AndyLiu0330",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndyLiu0330/markdown-cli-writer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AndyLiu0330/markdown-cli-writer/issues"
+  },
+  "homepage": "https://github.com/AndyLiu0330/markdown-cli-writer#readme",
   "license": "MIT",
   "dependencies": {
     "inquirer": "^8.2.6",

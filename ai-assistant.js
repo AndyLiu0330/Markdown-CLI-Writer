@@ -117,9 +117,9 @@ AI_MODEL=mistralai/mistral-7b-instruct:free
     }
 
     async callOpenRouter(prompt, systemPrompt = '') {
-        if (!this.apiKey) {
-            throw new Error('API key not configured. Run setup first.');
-        }
+        if (!this.apiKey) throw new Error('API key not configured. Run setup first.');
+        if (typeof prompt !== 'string' || !prompt.trim()) throw new Error('Prompt must be a non-empty string');
+        if (prompt.length > 8000) throw new Error('Prompt too large (limit 8000 characters)');
 
         const payload = {
             model: this.config.model,
@@ -133,7 +133,6 @@ AI_MODEL=mistralai/mistral-7b-instruct:free
 
         return new Promise((resolve, reject) => {
             const data = JSON.stringify(payload);
-            
             const options = {
                 hostname: 'openrouter.ai',
                 port: 443,
@@ -144,21 +143,18 @@ AI_MODEL=mistralai/mistral-7b-instruct:free
                     'Authorization': `Bearer ${this.apiKey}`,
                     'HTTP-Referer': 'https://github.com/AndyLiu0330/Markdown-CLI-Writer',
                     'X-Title': 'Markdown CLI Writer',
-                    'Content-Length': data.length
-                }
+                    'Content-Length': data.length,
+                    'User-Agent': 'markdown-cli-writer/1.0 (+https://npmjs.com/package/markdown-cli-writer)'
+                },
+                timeout: 30000
             };
-
             const req = https.request(options, (res) => {
                 let responseData = '';
-                
-                res.on('data', (chunk) => {
-                    responseData += chunk;
-                });
-                
+                res.on('data', (chunk) => { responseData += chunk; });
                 res.on('end', () => {
                     try {
                         const response = JSON.parse(responseData);
-                        if (response.choices && response.choices[0]) {
+                        if (response.choices && response.choices[0] && response.choices[0].message) {
                             resolve(response.choices[0].message.content);
                         } else {
                             reject(new Error('Invalid response format'));
@@ -168,11 +164,8 @@ AI_MODEL=mistralai/mistral-7b-instruct:free
                     }
                 });
             });
-
-            req.on('error', (error) => {
-                reject(new Error(`Request failed: ${error.message}`));
-            });
-
+            req.on('timeout', () => { req.destroy(); reject(new Error('OpenRouter request timed out')); });
+            req.on('error', (error) => reject(new Error(`Request failed: ${error.message}`)));
             req.write(data);
             req.end();
         });
@@ -181,17 +174,16 @@ AI_MODEL=mistralai/mistral-7b-instruct:free
     async callOllama(prompt, systemPrompt = '') {
         const ollamaUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
         const model = process.env.LOCAL_MODEL || 'llama2:7b';
-
+        if (typeof prompt !== 'string' || !prompt.trim()) throw new Error('Prompt must be a non-empty string');
+        if (prompt.length > 16000) throw new Error('Prompt too large (limit 16000 characters)');
         const payload = {
-            model: model,
+            model,
             prompt: systemPrompt ? `${systemPrompt}\n\n${prompt}` : prompt,
             stream: false
         };
-
         return new Promise((resolve, reject) => {
             const data = JSON.stringify(payload);
             const url = new URL(`${ollamaUrl}/api/generate`);
-            
             const options = {
                 hostname: url.hostname,
                 port: url.port || 11434,
@@ -199,17 +191,14 @@ AI_MODEL=mistralai/mistral-7b-instruct:free
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Content-Length': data.length
-                }
+                    'Content-Length': data.length,
+                    'User-Agent': 'markdown-cli-writer/1.0'
+                },
+                timeout: 60000
             };
-
             const req = https.request(options, (res) => {
                 let responseData = '';
-                
-                res.on('data', (chunk) => {
-                    responseData += chunk;
-                });
-                
+                res.on('data', (chunk) => { responseData += chunk; });
                 res.on('end', () => {
                     try {
                         const response = JSON.parse(responseData);
@@ -223,11 +212,8 @@ AI_MODEL=mistralai/mistral-7b-instruct:free
                     }
                 });
             });
-
-            req.on('error', (error) => {
-                reject(new Error(`Ollama request failed: ${error.message}`));
-            });
-
+            req.on('timeout', () => { req.destroy(); reject(new Error('Ollama request timed out')); });
+            req.on('error', (error) => reject(new Error(`Ollama request failed: ${error.message}`)));
             req.write(data);
             req.end();
         });
@@ -235,11 +221,8 @@ AI_MODEL=mistralai/mistral-7b-instruct:free
 
     async generateResponse(prompt, systemPrompt = '') {
         try {
-            if (this.config.provider === 'ollama') {
-                return await this.callOllama(prompt, systemPrompt);
-            } else {
-                return await this.callOpenRouter(prompt, systemPrompt);
-            }
+            if (this.config.provider === 'ollama') return await this.callOllama(prompt, systemPrompt);
+            return await this.callOpenRouter(prompt, systemPrompt);
         } catch (error) {
             throw new Error(`AI generation failed: ${error.message}`);
         }
@@ -247,7 +230,6 @@ AI_MODEL=mistralai/mistral-7b-instruct:free
 
     async suggestImprovements(content) {
         await this.ensureConfigLoaded();
-        
         const systemPrompt = `You are a helpful writing assistant. Analyze the given markdown content and suggest improvements for titles, headings, and overall structure. Focus on:
 1. Better, more engaging titles
 2. Clearer headings hierarchy
@@ -255,46 +237,21 @@ AI_MODEL=mistralai/mistral-7b-instruct:free
 4. Brief summary suggestions
 
 Provide concise, actionable suggestions in markdown format.`;
-
-        const prompt = `Please analyze this markdown content and suggest improvements:
-
-\`\`\`markdown
-${content}
-\`\`\`
-
-Provide specific suggestions for better titles, headings, and organization.`;
-
+        const prompt = `Please analyze this markdown content and suggest improvements:\n\n\`\`\`markdown\n${content}\n\`\`\`\n\nProvide specific suggestions for better titles, headings, and organization.`;
         return await this.generateResponse(prompt, systemPrompt);
     }
 
     async fixGrammar(content) {
         await this.ensureConfigLoaded();
-        
         const systemPrompt = `You are a professional editor. Fix grammar, spelling, and improve sentence structure in the given markdown content. Maintain the original meaning and markdown formatting. Only fix language issues, don't change the content structure.`;
-
-        const prompt = `Please fix grammar and improve the writing in this markdown content:
-
-\`\`\`markdown
-${content}
-\`\`\`
-
-Return the corrected markdown with the same structure but improved language.`;
-
+        const prompt = `Please fix grammar and improve the writing in this markdown content:\n\n\`\`\`markdown\n${content}\n\`\`\`\n\nReturn the corrected markdown with the same structure but improved language.`;
         return await this.generateResponse(prompt, systemPrompt);
     }
 
     async expandContent(content) {
         await this.ensureConfigLoaded();
         const systemPrompt = `You are a content expansion expert. Take the given markdown headings and brief content, then expand them into more detailed sections with examples, explanations, and additional context. Maintain the original structure but add substantial value.`;
-
-        const prompt = `Please expand this markdown content by adding more detail, examples, and explanations to each section:
-
-\`\`\`markdown
-${content}
-\`\`\`
-
-Add practical examples, detailed explanations, and helpful context while maintaining the original structure.`;
-
+        const prompt = `Please expand this markdown content by adding more detail, examples, and explanations to each section:\n\n\`\`\`markdown\n${content}\n\`\`\`\n\nAdd practical examples, detailed explanations, and helpful context while maintaining the original structure.`;
         return await this.generateResponse(prompt, systemPrompt);
     }
 }
